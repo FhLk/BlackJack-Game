@@ -1,55 +1,62 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
 
+//Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
 
+//function randomCard
 function randomCard(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
+//Oject of Player
 const player=reactive({name:'',score:0,round:[]})
 const bot=reactive({name:'',score:0,round:[]})
 
-
+//Card of Player
 const cardOfplayer=ref([])
 
-const cardOfbotShow=ref(['?'])
-const cardOfbotCal=ref([]);
+//Card of Bot 
+const cardOfbotShow=ref(['?']) //use for Show
+const cardOfbotCal=ref([]);// use for calculator
 
-const timetoDrawn=ref(0);
+//use with tag html for show
+const turn=ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
+const isChoose=ref(false);// when bot thinking of choose
+const isBotStop=ref();// when bot choose 'Stop' = true
+const isPlayerStop=ref();// when player choose 'Stop' = true
+const isPlayerDrawn=ref();// when player choose 'Drawn' = true
+const isPlay=ref(0);//when Start this web
 
-const isChoose=ref(false);
-const isBotStop=ref();
-const isBotDrawn=ref();
-const isPlayerStop=ref();
-const isPlayerDrawn=ref();
-const isPlay=ref(0);
+let red=ref('');// ux of bot
 
-let red=ref('');
+let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculator on html)
+let secondofBot;// second card of bot
+let firstofPlayer;//first card of player
+let secondofPlayer;//second card of player 
 
-let firstofBot=ref();
-let secondofBot;
-let firstofPlayer;
-let secondofPlayer;
-
+//Calculator card of player
 const sumOfplayer=computed(()=>{
   return cardOfplayer.value.reduce((p,c)=>{
     return p+c},0)
 });
 
+//Calculator card of bot
 const sumOfbot=computed(()=>{
   return cardOfbotCal.value.reduce((p,c)=>{return p+c},0)
 });
 
+//when start first time this web-page
 function Start(){ 
-firstofBot.value = randomCard(card.value)
-cardOfbotCal.value.push(firstofBot.value)
-card.value.splice(card.value.indexOf(firstofBot.value),1)
-secondofBot = randomCard(card.value)
-cardOfbotCal.value.push(secondofBot);
-cardOfbotShow.value.push(secondofBot);
-card.value.splice(card.value.indexOf(secondofBot),1)
+firstofBot.value = randomCard(card.value)//get first card of bot
+cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
+card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
+secondofBot = randomCard(card.value)//get second card of bot
+cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
+cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
+card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
 
+//player seem bot
 firstofPlayer = randomCard(card.value)
 card.value.splice(card.value.indexOf(firstofPlayer),1)
 cardOfplayer.value.push(firstofPlayer)
@@ -57,84 +64,96 @@ secondofPlayer = randomCard(card.value)
 cardOfplayer.value.push(secondofPlayer)
 card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
-Start();
+Start();// call function for start game
 
-const play=()=>{
-  isPlay.value++
-}
-
+//Game play of player
+//when player clink Drawn
 const PlayerDrawn=()=>{
-  if(card.value.length!=0){
-    isPlayerDrawn.value=true;
-    isPlayerStop.value=false;
-    let num=randomCard(card.value);
-    cardOfplayer.value.push(num)
-    card.value.splice(card.value.indexOf(num),1)
-    timetoDrawn.value=1;
-    Bot();
+  if(card.value.length!=0){// if orifinal card not empty
+    isPlayerStop.value=false;// assigned 'isPlayerStop' use for any process
+    let num=randomCard(card.value);//get card from random original card
+    cardOfplayer.value.push(num)//add card to card of player
+    card.value.splice(card.value.indexOf(num),1)// Remove card from original card
+    turn.value=1;//change turn to bot
+    Bot();//bot turn
   }
 }
-
+//when player clink Stop
 const PlayerStop =()=>{
-  isPlayerDrawn.value=false;
-  isPlayerStop.value=true;
-  timetoDrawn.value=1;
-  if(isBotStop.value==isPlayerStop.value){
-    timetoDrawn.value=2
+  isPlayerStop.value=true;// assigned 'isPlayerStop' use for any process
+  turn.value=1;//change turn to bot
+  if(isPlayerStop.value==isBotStop.value){//if player click stop and bot choose stop
+    turn.value=2//change to turn of result
   }
   else{
-    Bot();
+    Bot();//bot turn 
   }
 }
 
+//Game play of Bot
 function Bot(){
-  isChoose.value=true;
-  if(sumOfbot.value<18){
-    BotDrawn();
-    isBotDrawn.value=true;
-    isBotStop.value=false
+  isChoose.value=true;//assigned 'isChoose' use for show tag html
+  //Check condition
+  if(sumOfbot.value<18){// if Calculator card of bot less than 18
+    BotDrawn();//Bot Choose Drawn
+    isBotStop.value=false//assigned 'isBotStop' use for process
   }
-  else{
-    BotStop();
-    isBotDrawn.value=false;
-    isBotStop.value=true;
+  else{//if more than 18
+    BotStop();//Bot choose Stop
+    isBotStop.value=true;//assigned 'isBotStop' use for process
   }
 }
 
+//if Bot choose Drawn
 function BotDrawn(){
+  //tell to player that bot choose this 
   setTimeout(()=>{
-    red.value='color:red'
+    red.value='color:red'//change font-color to red
   },3000)
+
+  //seem player clink drawn crad
   setTimeout(()=>{
     if(card.value.length!=0){
       let num=randomCard(card.value);
       cardOfbotShow.value.push(num)
+
+      //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
       cardOfbotCal.value=[firstofBot.value,...cardOfbotShow.value.slice(1)];
+
       card.value.splice(card.value.indexOf(num),1)
-      timetoDrawn.value=0;
+      turn.value=0;
       isChoose.value=false;
       red.value=''
     }
   },6000)
 }
 
+//if Bot choose Stop
 function BotStop(){
+  //tell to player that bot choose this 
   setTimeout(()=>{
     red.value='color:red'
   },3000)
+
+  //seem player click Stop
   setTimeout(()=>{
     red.value=''
-    timetoDrawn.value=0;
+    turn.value=0;
     isChoose.value=false;
+
+    //if player click stop and bot choose stop
     if(isBotStop.value==isPlayerStop.value){
-      timetoDrawn.value=2;
+      turn.value=2;//change to turn of result
     }
+
   },6000)
 }
 
+//find the winner this round
 const winnerRound=ref('')
-
+//Get Sum of Bot and player to find winner this round 
 const winRound=(sumOfplayer,sumOfbot)=>{
+  //check condition and assigned value to 'winnerRound'
   if(sumOfplayer > 21 && sumOfbot > 21 ){
     winnerRound.value='Drawn'
     return 'Drawn';
@@ -163,33 +182,30 @@ const winRound=(sumOfplayer,sumOfbot)=>{
   }
 }
 
+//when click start new round
 const nextRound=()=>{
+  //increase score from check condition by name 
   if(winnerRound.value==player.name){
     player.score++
   }
   else if(winnerRound.value==bot.name){
     bot.score++
   }
+  //reset value and restart round
   card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
   cardOfplayer.value=[]
   cardOfbotShow.value=['?']
   cardOfbotCal.value=[]
-  timetoDrawn.value=0
-  isBotDrawn.value=undefined
+  turn.value=0
   isBotStop.value=undefined
-  isPlayerDrawn.value=undefined
   isPlayerStop.value=undefined
   Start() 
 }
 
-const winnerGame=computed(()=>{
-  if(player.value.score==2){
-    return 1
-  }
-  if(bot.value.score==2){
-    return 2
-  }
-})
+//use for show tag html 
+const play=()=>{
+  isPlay.value++
+}
 </script>
  
 <template>
@@ -210,21 +226,21 @@ const winnerGame=computed(()=>{
 <div class="gameplay" v-show="isPlay==2">
 <div class="field-game">
   <p>Score Board {{player.name}} {{player.score}}:{{bot.score}} {{bot.name}}</p>
-<p>{{bot.name}}: {{timetoDrawn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="timetoDrawn !=2 "> ? + </span>{{timetoDrawn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
+<p>{{bot.name}}: {{turn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="turn !=2 "> ? + </span>{{turn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
 <p v-show="isChoose"><span :style="sumOfbot < 18 ? red:''">Drawn</span>:<span :style="sumOfbot < 18 ? '':red">Stop</span></p>
-<p v-if="timetoDrawn==0">-----Turn Of Player-----</p>
-<p v-else-if="timetoDrawn==1">-----Turn Of COM1-----</p>
+<p v-if="turn==0">-----Turn Of Player-----</p>
+<p v-else-if="turn==1">-----Turn Of COM1-----</p>
 <p v-else>-----Result-----</p>
 <div>
-  <button v-show="timetoDrawn==0" @click="PlayerDrawn">Drawn</button>
-  <button v-show="timetoDrawn==0" @click="PlayerStop">Stop</button>
+  <button v-show="turn==0" @click="PlayerDrawn">Drawn</button>
+  <button v-show="turn==0" @click="PlayerStop">Stop</button>
 </div>
 <p>{{player.name}}: {{cardOfplayer}} : {{sumOfplayer}}</p>
 </div>
-<div class="winnerRound" v-show="timetoDrawn==2">
+<div class="winnerRound" v-show="turn==2">
   THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}} score: +1
 </div>
-<button @click="nextRound" v-show="timetoDrawn==2" >Next Round</button>
+<button @click="nextRound" v-show="turn==2" >Next Round</button>
 </div>
 </template>
  
