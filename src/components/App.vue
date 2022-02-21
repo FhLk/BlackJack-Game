@@ -1,249 +1,307 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
-
-//Original Card
-const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
-
-//function randomCard
-function randomCard(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
+import { ref, computed } from "vue";
+import card from "../../data/card";
+// ตัวแปร
+const deckCard = ref(card);
+console.log(deckCard.value);
+const item = ref({});
+const playerCard = ref([]);
+const computerCard = ref([]);
+const playerStop = ref(false);
+const computerStop = ref(false);
+const regameButton = ref(false);
+const historyButton = ref(false);
+const historyGame = ref({player:0,computer:0})
+// ฟังก์ชั่นเกม
+const randomcomputer = () => {
+  item.value =
+    deckCard.value[Math.floor(Math.random() * deckCard.value.length)];
+  computerCard.value.push(item.value);
+  console.log(item.value);
+};
+const openHistory = () => {
+  historyButton.value = true
 }
+const closeHistory = () => {
+  historyButton.value = false;
+}
+const randomPlayer = () => {
+  if (computerCard.value.length == 0) {
+    randomcomputer();
+  }
+  item.value =
+    deckCard.value[Math.floor(Math.random() * deckCard.value.length)];
+  playerCard.value.push(item.value);
+  console.log(item.value);
+};
 
-//Oject of Player
-const player=reactive({name:'',score:0,round:[]})
-const bot=reactive({name:'',score:0,round:[]})
+const regame = () => {
+  playerCard.value = [];
+  computerCard.value = [];
+  playerStop.value = false;
+  computerStop.value = false;
+  regameButton.value = false;
+  computerPlay()
+};
 
-//Card of Player
-const cardOfplayer=ref([])
-
-//Card of Bot 
-const cardOfbotShow=ref(['?']) //use for Show
-const cardOfbotCal=ref([]);// use for calculator
-
-//use with tag html for show
-const turn=ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
-const isChoose=ref(false);// when bot thinking of choose
-const isBotStop=ref();// when bot choose 'Stop' = true
-const isPlayerStop=ref();// when player choose 'Stop' = true
-const isPlayerDrawn=ref();// when player choose 'Drawn' = true
-const isPlay=ref(0);//when Start this web
-
-let red=ref('');// ux of bot
-
-let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculator on html)
-let secondofBot;// second card of bot
-let firstofPlayer;//first card of player
-let secondofPlayer;//second card of player 
-
-//Calculator card of player
-const sumOfplayer=computed(()=>{
-  return cardOfplayer.value.reduce((p,c)=>{
-    return p+c},0)
+const competitionScore = computed(() => {
+  if (playerStop.value == true && computerStop.value == true) {
+    if (calculatePlayer.value > 21) {
+      regameButton.value = true;
+      historyGame.value.computer++
+      return "Player Bust,Computer Win";
+    } else if (calculateComputer.value > 21) {
+      regameButton.value = true;
+       historyGame.value.player++
+      return "Computer Bust, Player Win";
+    } else if (calculatePlayer.value == 21) {
+       historyGame.value.player++
+      regameButton.value = true;
+      return "Player Blackjack, Player Win";
+    } else if (calculateComputer.value == 21) {
+       historyGame.value.computer++
+      regameButton.value = true;
+      return "Computer Blackjack, Computer Win";
+    } else if (calculatePlayer.value > calculateComputer.value) {
+       historyGame.value.player++
+      regameButton.value = true;
+      return "Player Win";
+    } else if (calculatePlayer.value < calculateComputer.value) {
+      regameButton.value = true;
+       historyGame.value.computer++
+      return "Computer Win";
+    } else {
+      regameButton.value = true;
+      return "Tie Game";
+    }
+  } else if (calculatePlayer.value > 21) {
+    regameButton.value = true;
+     historyGame.value.computer++
+    return "Player Bust, Computer Win";
+  } else if (calculateComputer.value > 21) {
+    regameButton.value = true;
+     historyGame.value.player++
+    return "Computer Bust, Player Win";
+  } else if (calculateComputer.value == 21) {
+    regameButton.value = true;
+     historyGame.value.computer++
+    return "Computer Blackjack, Computer Win!";
+  } else if (calculatePlayer.value == 21) {
+    regameButton.value = true;
+     historyGame.value.player++
+    return "Player Blackjack, Player Win!";
+  } else {
+    return "";
+  }
 });
 
-//Calculator card of bot
-const sumOfbot=computed(()=>{
-  return cardOfbotCal.value.reduce((p,c)=>{return p+c},0)
+const calculatePlayer = computed(() => {
+  let sum = ref(0);
+  for (let i = 0; i < playerCard.value.length; i++) {
+    sum.value += Number(playerCard.value[i].value);
+    console.log(sum.value);
+  }
+  return sum.value;
 });
 
-//when start first time this web-page
-function Start(){ 
-firstofBot.value = randomCard(card.value)//get first card of bot
-cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
-secondofBot = randomCard(card.value)//get second card of bot
-cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
-
-//player seem bot
-firstofPlayer = randomCard(card.value)
-card.value.splice(card.value.indexOf(firstofPlayer),1)
-cardOfplayer.value.push(firstofPlayer)
-secondofPlayer = randomCard(card.value)
-cardOfplayer.value.push(secondofPlayer)
-card.value.splice(card.value.indexOf(secondofPlayer),1)
-}
-Start();// call function for start game
-
-//Game play of player
-//when player clink Drawn
-const PlayerDrawn=()=>{
-  if(card.value.length!=0){// if orifinal card not empty
-    isPlayerStop.value=false;// assigned 'isPlayerStop' use for any process
-    let num=randomCard(card.value);//get card from random original card
-    cardOfplayer.value.push(num)//add card to card of player
-    card.value.splice(card.value.indexOf(num),1)// Remove card from original card
-    turn.value=1;//change turn to bot
-    Bot();//bot turn
+const calculateComputer = computed(() => {
+  let sum = ref(0);
+  for (let i = 0; i < computerCard.value.length; i++) {
+    sum.value += Number(computerCard.value[i].value);
+    console.log(sum.value);
   }
-}
-//when player clink Stop
-const PlayerStop =()=>{
-  isPlayerStop.value=true;// assigned 'isPlayerStop' use for any process
-  turn.value=1;//change turn to bot
-  if(isPlayerStop.value==isBotStop.value){//if player click stop and bot choose stop
-    turn.value=2//change to turn of result
-  }
-  else{
-    Bot();//bot turn 
-  }
-}
-
-//Game play of Bot
-function Bot(){
-  isChoose.value=true;//assigned 'isChoose' use for show tag html
-  //Check condition
-  if(sumOfbot.value<18){// if Calculator card of bot less than 18
-    BotDrawn();//Bot Choose Drawn
-    isBotStop.value=false//assigned 'isBotStop' use for process
-  }
-  else{//if more than 18
-    BotStop();//Bot choose Stop
-    isBotStop.value=true;//assigned 'isBotStop' use for process
-  }
-}
-
-//if Bot choose Drawn
-function BotDrawn(){
-  //tell to player that bot choose this 
-  setTimeout(()=>{
-    red.value='color:red'//change font-color to red
-  },3000)
-
-  //seem player clink drawn crad
-  setTimeout(()=>{
-    if(card.value.length!=0){
-      let num=randomCard(card.value);
-      cardOfbotShow.value.push(num)
-
-      //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
-      cardOfbotCal.value=[firstofBot.value,...cardOfbotShow.value.slice(1)];
-
-      card.value.splice(card.value.indexOf(num),1)
-      turn.value=0;
-      isChoose.value=false;
-      red.value=''
+  return sum.value;
+});
+// const item = deckCard.value[Math.floor(Math.random()*deckCard.value.length)];
+const stopPlayer = () => {
+  playerStop.value = true;
+  while (computerStop.value == false) {
+    if (calculateComputer.value > 16) {
+      computerStop.value = true;
+    } else {
+      randomcomputer();
+      // setTimeout(randomcomputer ,2000)
     }
-  },6000)
-}
-
-//if Bot choose Stop
-function BotStop(){
-  //tell to player that bot choose this 
-  setTimeout(()=>{
-    red.value='color:red'
-  },3000)
-
-  //seem player click Stop
-  setTimeout(()=>{
-    red.value=''
-    turn.value=0;
-    isChoose.value=false;
-
-    //if player click stop and bot choose stop
-    if(isBotStop.value==isPlayerStop.value){
-      turn.value=2;//change to turn of result
-    }
-
-  },6000)
-}
-
-//find the winner this round
-const winnerRound=ref('')
-//Get Sum of Bot and player to find winner this round 
-const winRound=(sumOfplayer,sumOfbot)=>{
-  //check condition and assigned value to 'winnerRound'
-  if(sumOfplayer > 21 && sumOfbot > 21 ){
-    winnerRound.value='Drawn'
-    return 'Drawn';
   }
-
-  if(sumOfplayer>sumOfbot && sumOfplayer <= 21 ){
-    winnerRound.value=player.name
-    return player.name
-  }
-  else if(sumOfplayer>sumOfbot && sumOfplayer > 21){
-    winnerRound.value=bot.name
-    return bot.name
-  }
-
-  if(sumOfplayer<sumOfbot && sumOfbot <=21){
-    winnerRound.value= bot.name
-    return bot.name;
-  }
-  else if(sumOfplayer<sumOfbot && sumOfbot > 21){
-    winnerRound.value=player.name
-    return player.name
-  }
-  else{
-    winnerRound.value='Drawn'
-    return'Drawn';
-  }
-}
-
-//when click start new round
-const nextRound=()=>{
-  //increase score from check condition by name 
-  if(winnerRound.value==player.name){
-    player.score++
-  }
-  else if(winnerRound.value==bot.name){
-    bot.score++
-  }
-  //reset value and restart round
-  card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
-  cardOfplayer.value=[]
-  cardOfbotShow.value=['?']
-  cardOfbotCal.value=[]
-  turn.value=0
-  isBotStop.value=undefined
-  isPlayerStop.value=undefined
-  Start() 
-}
-
-//use for show tag html 
-const play=()=>{
-  isPlay.value++
-}
+};
+const stopComputer = () => {
+  computerStop.value = true;
+};
+const computerPlay = () => {
+  randomcomputer();
+};
+computerPlay();
 </script>
- 
+
 <template>
-<p>{{card}}</p>
+  <div class="cardtable">
+    <div>
+      <div>
+        <p class="scoresum">{{ competitionScore }}</p>
+      </div>
+      <div class="playcardzone">
+        <p>Computer: {{ calculateComputer }}</p>
+        <div class="zonecard">
+          <div v-for="card in computerCard" :key="card">
+            <img :src="card.image" alt="" class="imgcard" />
+          </div>
+        </div>
+        <p>Player: {{ calculatePlayer }}</p>
+        <div class="zonecard">
+          <img class="imgcard" src="https://i.pinimg.com/originals/9b/57/35/9b5735855008bb6f95f6e66c4f2f0fa6.jpg" alt="" v-if="playerCard.length == 0">
+          <div v-for="card in playerCard" :key="card" v-else>
+            <img :src="card.image" alt="" class="imgcard" />
+          </div>
+        </div>
+      </div>
+      <!-- <div class="playButtonZone"> -->
+      <!-- <div>
+          <p>Computer</p>
+          <button @click="randomcomputer">สุ่ม</button>
+          <button @click="stopComputer">หยุด</button>
+        </div> -->
+      <div class="buttonCenter">
+        <button
+          @click="randomPlayer"
+          class="buttonrandom"
+          v-if="regameButton == false"
+        >
+          Draw
+        </button>
+        <button
+          @click="stopPlayer"
+          class="buttonstop"
+          v-if="regameButton == false"
+        >
+          Stand
+        </button>
+        <button v-if="regameButton == true" @click="regame" class="buttonregame">Regame</button>
+        <button v-if="regameButton == true && historyButton == false" class="buttonhistory" @click="openHistory">History</button>
+        <button v-if="historyButton == true" class="buttonhistory" @click="closeHistory">Close History</button>
+      </div>
+      <div class="showHistory" v-if="historyButton">
+        <p>Player: {{ historyGame.player }}</p>
+        <p class="showHistoryScore">Computer: {{ historyGame.computer }}</p>
+      </div>
+      <!-- </div> -->
 
-<button @click="play" v-show="isPlay==0">Play</button>
-
-<div class="field-name" v-show="isPlay==1">
-<p>Player Name: 
-  <input type="text" placeholder="Player Name...." v-model="player.name">
-</p>
-<p>Com Name: 
-  <input type="text" placeholder="Com Name...." v-model="bot.name">
-</p>
-<button @click="play">OK</button>
-</div>
-
-<div class="gameplay" v-show="isPlay==2">
-<div class="field-game">
-  <p>Score Board {{player.name}} {{player.score}}:{{bot.score}} {{bot.name}}</p>
-<p>{{bot.name}}: {{turn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="turn !=2 "> ? + </span>{{turn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
-<p v-show="isChoose"><span :style="sumOfbot < 18 ? red:''">Drawn</span>:<span :style="sumOfbot < 18 ? '':red">Stop</span></p>
-<p v-if="turn==0">-----Turn Of Player-----</p>
-<p v-else-if="turn==1">-----Turn Of COM1-----</p>
-<p v-else>-----Result-----</p>
-<div>
-  <button v-show="turn==0" @click="PlayerDrawn">Drawn</button>
-  <button v-show="turn==0" @click="PlayerStop">Stop</button>
-</div>
-<p>{{player.name}}: {{cardOfplayer}} : {{sumOfplayer}}</p>
-</div>
-<div class="winnerRound" v-show="turn==2">
-  THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}} score: +1
-</div>
-<button @click="nextRound" v-show="turn==2" >Next Round</button>
-</div>
+      <!-- <div class="playzonecard">
+        <p>Computer Score: {{ calculateComputer }}</p>
+        <p>Player Score: {{ calculatePlayer }}</p>
+      </div> -->
+    </div>
+  </div>
 </template>
- 
-<style>
 
+<style scoped>
+.zonecard {
+  margin-top: 3%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.imgcard {
+  width: 100px;
+  height: 150px;
+  margin-right: 30px;
+}
+.cardtable {
+  padding-top:2rem;
+  background-color: #2da042;
+  height: 100vh;
+}
+.playcardzone {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 5%;
+  margin-left: 5%;
+}
+.playButtonZone {
+  display: flex;
+  justify-content: space-between;
+}
+p {
+  color: aliceblue;
+}
+.buttonCenter {
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+}
+.buttonstop {
+  margin-left: 20px;
+  width: 100px;
+  height: 75px;
+  background-color: #d30100;
+  color: white;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+.buttonrandom {
+  width: 100px;
+  height: 75px;
+  color: white;
+  background-color: #039bc0;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+.buttonregame {
+  width: 100px;
+  height: 75px;
+  color: white;
+  background-color: #039bc0;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+
+.buttonhistory {
+   margin-left: 20px;
+  width: 100px;
+  height: 75px;
+  color: white;
+  background-color: #eb4f20;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+.scoresum{
+  text-align: center;
+  font-size: 20px;
+}
+.showHistory{
+  display:flex;
+  justify-content: space-around;
+}
+@media only screen and (max-width: 600px) {
+  .imgcard {
+  width: 60px;
+  height: 85px;
+  margin-right: 10px;
+}
+.buttonCenter {
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+}
+.buttonstop {
+  width: 100px;
+  height: 75px;
+}
+.buttonrandom {
+  width: 100px;
+  height: 75px;
+}
+.buttonregame {
+  width: 100px;
+  height: 75px;
+}
+
+.buttonhistory {
+  width: 100px;
+  height: 75px;
+}
+}
+/* .showHistoryScore{
+  margin-left:100px;
+} */
 </style>
