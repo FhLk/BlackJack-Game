@@ -66,6 +66,15 @@ card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
 Start();// call function for start game
 
+const CheckName=(playerName,BotName)=>{
+  if(playerName==''&&BotName==''){
+    return true
+  }
+  else{
+    return false
+  }
+}
+
 //Game play of player
 //when player clink Drawn
 const PlayerDrawn=()=>{
@@ -273,7 +282,7 @@ const endGame=()=>{
         />
       </div>
       <div class="ok-button-div">
-        <button @click="play" class="ok-button">OK</button>
+        <button @click="play" class="ok-button" :disabled="CheckName(player.name,bot.name)">OK</button>
       </div>
     </div>
 
