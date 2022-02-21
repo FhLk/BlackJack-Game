@@ -1,249 +1,386 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
-
+import { computed, reactive, ref } from "vue";
 //Original Card
-const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
-
+const card = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 //function randomCard
-function randomCard(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
+function randomCard(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
-
 //Oject of Player
-const player=reactive({name:'',score:0,round:[]})
-const bot=reactive({name:'',score:0,round:[]})
-
+const player = reactive({ name: "", score: 0, round: [] });
+const bot = reactive({ name: "", score: 0, round: [] });
 //Card of Player
-const cardOfplayer=ref([])
-
-//Card of Bot 
-const cardOfbotShow=ref(['?']) //use for Show
-const cardOfbotCal=ref([]);// use for calculator
-
+const cardOfplayer = ref([]);
+//Card of Bot
+const cardOfbotShow = ref(["?"]); //use for Show
+const cardOfbotCal = ref([]); // use for calculator
 //use with tag html for show
-const turn=ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
-const isChoose=ref(false);// when bot thinking of choose
-const isBotStop=ref();// when bot choose 'Stop' = true
-const isPlayerStop=ref();// when player choose 'Stop' = true
-const isPlayerDrawn=ref();// when player choose 'Drawn' = true
-const isPlay=ref(0);//when Start this web
-
-let red=ref('');// ux of bot
-
-let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculator on html)
-let secondofBot;// second card of bot
-let firstofPlayer;//first card of player
-let secondofPlayer;//second card of player 
-
+const turn = ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
+const isChoose = ref(false); // when bot thinking of choose
+const isBotStop = ref(); // when bot choose 'Stop' = true
+const isPlayerStop = ref(); // when player choose 'Stop' = true
+const isPlayerDrawn = ref(); // when player choose 'Drawn' = true
+const isPlay = ref(0); //when Start this web
+let red = ref(""); // ux of bot
+let firstofBot = ref(); // first card of bot (use 'ref()' because it to be calculator on html)
+let secondofBot; // second card of bot
+let firstofPlayer; //first card of player
+let secondofPlayer; //second card of player
 //Calculator card of player
-const sumOfplayer=computed(()=>{
-  return cardOfplayer.value.reduce((p,c)=>{
-    return p+c},0)
+const sumOfplayer = computed(() => {
+  return cardOfplayer.value.reduce((p, c) => {
+    return p + c;
+  }, 0);
 });
-
 //Calculator card of bot
-const sumOfbot=computed(()=>{
-  return cardOfbotCal.value.reduce((p,c)=>{return p+c},0)
+const sumOfbot = computed(() => {
+  return cardOfbotCal.value.reduce((p, c) => {
+    return p + c;
+  }, 0);
 });
-
 //when start first time this web-page
-function Start(){ 
-firstofBot.value = randomCard(card.value)//get first card of bot
-cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
-secondofBot = randomCard(card.value)//get second card of bot
-cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
-
-//player seem bot
-firstofPlayer = randomCard(card.value)
-card.value.splice(card.value.indexOf(firstofPlayer),1)
-cardOfplayer.value.push(firstofPlayer)
-secondofPlayer = randomCard(card.value)
-cardOfplayer.value.push(secondofPlayer)
-card.value.splice(card.value.indexOf(secondofPlayer),1)
+function Start() {
+  firstofBot.value = randomCard(card.value); //get first card of bot
+  cardOfbotCal.value.push(firstofBot.value); //add card to card of bot use for calculator
+  card.value.splice(card.value.indexOf(firstofBot.value), 1); // Remove card from original card
+  secondofBot = randomCard(card.value); //get second card of bot
+  cardOfbotCal.value.push(secondofBot); //add card to card of bot use for show
+  cardOfbotShow.value.push(secondofBot); //add card to card of bot use for calculator
+  card.value.splice(card.value.indexOf(secondofBot), 1); // Remove card from original card
+  //player seem bot
+  firstofPlayer = randomCard(card.value);
+  card.value.splice(card.value.indexOf(firstofPlayer), 1);
+  cardOfplayer.value.push(firstofPlayer);
+  secondofPlayer = randomCard(card.value);
+  cardOfplayer.value.push(secondofPlayer);
+  card.value.splice(card.value.indexOf(secondofPlayer), 1);
 }
-Start();// call function for start game
-
+Start(); // call function for start game
 //Game play of player
 //when player clink Drawn
-const PlayerDrawn=()=>{
-  if(card.value.length!=0){// if orifinal card not empty
-    isPlayerStop.value=false;// assigned 'isPlayerStop' use for any process
-    let num=randomCard(card.value);//get card from random original card
-    cardOfplayer.value.push(num)//add card to card of player
-    card.value.splice(card.value.indexOf(num),1)// Remove card from original card
-    turn.value=1;//change turn to bot
-    Bot();//bot turn
+const PlayerDrawn = () => {
+  if (card.value.length != 0) {
+    // if orifinal card not empty
+    isPlayerStop.value = false; // assigned 'isPlayerStop' use for any process
+    let num = randomCard(card.value); //get card from random original card
+    cardOfplayer.value.push(num); //add card to card of player
+    card.value.splice(card.value.indexOf(num), 1); // Remove card from original card
+    turn.value = 1; //change turn to bot
+    Bot(); //bot turn
   }
-}
+};
 //when player clink Stop
-const PlayerStop =()=>{
-  isPlayerStop.value=true;// assigned 'isPlayerStop' use for any process
-  turn.value=1;//change turn to bot
-  if(isPlayerStop.value==isBotStop.value){//if player click stop and bot choose stop
-    turn.value=2//change to turn of result
-  }
-  else{
-    Bot();//bot turn 
-  }
-}
-
-//Game play of Bot
-function Bot(){
-  isChoose.value=true;//assigned 'isChoose' use for show tag html
-  //Check condition
-  if(sumOfbot.value<18){// if Calculator card of bot less than 18
-    BotDrawn();//Bot Choose Drawn
-    isBotStop.value=false//assigned 'isBotStop' use for process
-  }
-  else{//if more than 18
-    BotStop();//Bot choose Stop
-    isBotStop.value=true;//assigned 'isBotStop' use for process
-  }
-}
-
-//if Bot choose Drawn
-function BotDrawn(){
-  //tell to player that bot choose this 
-  setTimeout(()=>{
-    red.value='color:red'//change font-color to red
-  },3000)
-
-  //seem player clink drawn crad
-  setTimeout(()=>{
-    if(card.value.length!=0){
-      let num=randomCard(card.value);
-      cardOfbotShow.value.push(num)
-
-      //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
-      cardOfbotCal.value=[firstofBot.value,...cardOfbotShow.value.slice(1)];
-
-      card.value.splice(card.value.indexOf(num),1)
-      turn.value=0;
-      isChoose.value=false;
-      red.value=''
-    }
-  },6000)
-}
-
-//if Bot choose Stop
-function BotStop(){
-  //tell to player that bot choose this 
-  setTimeout(()=>{
-    red.value='color:red'
-  },3000)
-
-  //seem player click Stop
-  setTimeout(()=>{
-    red.value=''
-    turn.value=0;
-    isChoose.value=false;
-
+const PlayerStop = () => {
+  isPlayerStop.value = true; // assigned 'isPlayerStop' use for any process
+  turn.value = 1; //change turn to bot
+  if (isPlayerStop.value == isBotStop.value) {
     //if player click stop and bot choose stop
-    if(isBotStop.value==isPlayerStop.value){
-      turn.value=2;//change to turn of result
-    }
-
-  },6000)
+    turn.value = 2; //change to turn of result
+  } else {
+    Bot(); //bot turn
+  }
+};
+//Game play of Bot
+function Bot() {
+  isChoose.value = true; //assigned 'isChoose' use for show tag html
+  //Check condition
+  if (sumOfbot.value < 18) {
+    // if Calculator card of bot less than 18
+    BotDrawn(); //Bot Choose Drawn
+    isBotStop.value = false; //assigned 'isBotStop' use for process
+  } else {
+    //if more than 18
+    BotStop(); //Bot choose Stop
+    isBotStop.value = true; //assigned 'isBotStop' use for process
+  }
 }
-
+//if Bot choose Drawn
+function BotDrawn() {
+  //tell to player that bot choose this
+  setTimeout(() => {
+    red.value = "color:red"; //change font-color to red
+  }, 3000);
+  //seem player clink drawn crad
+  setTimeout(() => {
+    if (card.value.length != 0) {
+      let num = randomCard(card.value);
+      cardOfbotShow.value.push(num);
+      //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
+      cardOfbotCal.value = [firstofBot.value, ...cardOfbotShow.value.slice(1)];
+      card.value.splice(card.value.indexOf(num), 1);
+      turn.value = 0;
+      isChoose.value = false;
+      red.value = "";
+    }
+  }, 6000);
+}
+//if Bot choose Stop
+function BotStop() {
+  //tell to player that bot choose this
+  setTimeout(() => {
+    red.value = "color:red";
+  }, 3000);
+  //seem player click Stop
+  setTimeout(() => {
+    red.value = "";
+    turn.value = 0;
+    isChoose.value = false;
+    //if player click stop and bot choose stop
+    if (isBotStop.value == isPlayerStop.value) {
+      turn.value = 2; //change to turn of result
+    }
+  }, 6000);
+}
 //find the winner this round
-const winnerRound=ref('')
-//Get Sum of Bot and player to find winner this round 
-const winRound=(sumOfplayer,sumOfbot)=>{
+const winnerRound = ref("");
+//Get Sum of Bot and player to find winner this round
+const winRound = (sumOfplayer, sumOfbot) => {
   //check condition and assigned value to 'winnerRound'
-  if(sumOfplayer > 21 && sumOfbot > 21 ){
-    winnerRound.value='Drawn'
-    return 'Drawn';
+  if (sumOfplayer > 21 && sumOfbot > 21) {
+    winnerRound.value = "Drawn";
+    return "Drawn";
   }
-
-  if(sumOfplayer>sumOfbot && sumOfplayer <= 21 ){
-    winnerRound.value=player.name
-    return player.name
-  }
-  else if(sumOfplayer>sumOfbot && sumOfplayer > 21){
-    winnerRound.value=bot.name
-    return bot.name
-  }
-
-  if(sumOfplayer<sumOfbot && sumOfbot <=21){
-    winnerRound.value= bot.name
+  if (sumOfplayer > sumOfbot && sumOfplayer <= 21) {
+    winnerRound.value = player.name;
+    return player.name;
+  } else if (sumOfplayer > sumOfbot && sumOfplayer > 21) {
+    winnerRound.value = bot.name;
     return bot.name;
   }
-  else if(sumOfplayer<sumOfbot && sumOfbot > 21){
-    winnerRound.value=player.name
-    return player.name
+  if (sumOfplayer < sumOfbot && sumOfbot <= 21) {
+    winnerRound.value = bot.name;
+    return bot.name;
+  } else if (sumOfplayer < sumOfbot && sumOfbot > 21) {
+    winnerRound.value = player.name;
+    return player.name;
+  } else {
+    winnerRound.value = "Drawn";
+    return "Drawn";
   }
-  else{
-    winnerRound.value='Drawn'
-    return'Drawn';
-  }
-}
-
+};
 //when click start new round
-const nextRound=()=>{
-  //increase score from check condition by name 
-  if(winnerRound.value==player.name){
-    player.score++
-  }
-  else if(winnerRound.value==bot.name){
-    bot.score++
+const nextRound = () => {
+  //increase score from check condition by name
+  if (winnerRound.value == player.name) {
+    player.score++;
+  } else if (winnerRound.value == bot.name) {
+    bot.score++;
   }
   //reset value and restart round
-  card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
-  cardOfplayer.value=[]
-  cardOfbotShow.value=['?']
-  cardOfbotCal.value=[]
-  turn.value=0
-  isBotStop.value=undefined
-  isPlayerStop.value=undefined
-  Start() 
-}
-
-//use for show tag html 
-const play=()=>{
-  isPlay.value++
-}
+  card.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  cardOfplayer.value = [];
+  cardOfbotShow.value = ["?"];
+  cardOfbotCal.value = [];
+  turn.value = 0;
+  isBotStop.value = undefined;
+  isPlayerStop.value = undefined;
+  Start();
+};
+//use for show tag html
+const play = () => {
+  isPlay.value++;
+};
 </script>
  
 <template>
-<p>{{card}}</p>
+  <div class="body">
+    <p>{{ card }}</p>
+    <div class="playbuttondiv">
+      <button @click="play" v-show="isPlay == 0" class="playbutton">
+        Play
+      </button>
+    </div>
+    <div class="field-name" v-show="isPlay == 1">
+      <div class="field-name-text">
+        <p class="field-name-text-text">Player Name:</p>
+        <input
+          type="text"
+          placeholder="Player Name...."
+          v-model="player.name"
+        />
+      </div>
+      <div class="field-name-text">
+        <p class="field-name-text-text">Com Name:</p>
+        <input
+          type="text"
+          placeholder="Com Name...."
+          v-model="bot.name"
+          class="field-name-text-text-input"
+        />
+      </div>
+      <div class="ok-button-div">
+        <button @click="play" class="ok-button">OK</button>
+      </div>
+    </div>
 
-<button @click="play" v-show="isPlay==0">Play</button>
-
-<div class="field-name" v-show="isPlay==1">
-<p>Player Name: 
-  <input type="text" placeholder="Player Name...." v-model="player.name">
-</p>
-<p>Com Name: 
-  <input type="text" placeholder="Com Name...." v-model="bot.name">
-</p>
-<button @click="play">OK</button>
-</div>
-
-<div class="gameplay" v-show="isPlay==2">
-<div class="field-game">
-  <p>Score Board {{player.name}} {{player.score}}:{{bot.score}} {{bot.name}}</p>
-<p>{{bot.name}}: {{turn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="turn !=2 "> ? + </span>{{turn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
-<p v-show="isChoose"><span :style="sumOfbot < 18 ? red:''">Drawn</span>:<span :style="sumOfbot < 18 ? '':red">Stop</span></p>
-<p v-if="turn==0">-----Turn Of Player-----</p>
-<p v-else-if="turn==1">-----Turn Of COM1-----</p>
-<p v-else>-----Result-----</p>
-<div>
-  <button v-show="turn==0" @click="PlayerDrawn">Drawn</button>
-  <button v-show="turn==0" @click="PlayerStop">Stop</button>
-</div>
-<p>{{player.name}}: {{cardOfplayer}} : {{sumOfplayer}}</p>
-</div>
-<div class="winnerRound" v-show="turn==2">
-  THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}} score: +1
-</div>
-<button @click="nextRound" v-show="turn==2" >Next Round</button>
-</div>
+    <div class="gameplay" v-show="isPlay == 2">
+      <div class="field-game">
+        <p class="score-board">
+          Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
+          {{ bot.name }}
+        </p>
+        <p class="player-score">
+          {{ bot.name }}:
+          {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
+        </p>
+        <div v-if="turn == 2" class="card-card-div">
+          <div v-for="card in cardOfbotCal" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>
+        </div>
+        <div v-else class="card-card-div">
+          <div v-for="card in cardOfbotShow" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>  
+        </div>
+        <div class="center">
+          <p v-show="isChoose" class="text-choose">
+            <span :style="sumOfbot < 18 ? red : ''">Drawn</span>:<span
+              :style="sumOfbot < 18 ? '' : red"
+              >Stop</span
+            >
+          </p>
+          <p v-if="turn == 0">-----Turn Of Player-----</p>
+          <p v-else-if="turn == 1">-----Turn Of COM1-----</p>
+          <div v-else>
+            <p>-----Result-----</p>
+            <div class="winnerRound" v-show="turn == 2">
+              THE WINNER THIS ROUND IS
+              {{ winRound(sumOfplayer, sumOfbot) }} score: +1
+            </div>
+            <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
+          </div>
+        </div>
+        <div class="button-choose-player-div">
+          <button
+            v-show="turn == 0"
+            @click="PlayerDrawn"
+            class="button-choose-player-left"
+          >
+            Drawn
+          </button>
+          <button
+            v-show="turn == 0"
+            @click="PlayerStop"
+            class="button-choose-player-right"
+          >
+            Stop
+          </button>
+        </div>
+        <p class="player-score">{{ player.name }}: {{ sumOfplayer }}</p>
+        <div class="card-card-div">
+          <div v-for="card in cardOfplayer" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
  
 <style>
-
+.body {
+  height: 100vh;
+}
+.playbutton {
+  background-color: #2da042;
+  color: white;
+  border: white 5px solid;
+  border-radius: 20px;
+  width: 300px;
+  height: 150px;
+  margin-top: 30vh;
+  font-size: 30px;
+}
+.playbuttondiv {
+  display: flex;
+  justify-content: center;
+}
+.field-name {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.field-name-text {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.field-name-text-text {
+  margin-top: 1rem;
+  margin-right: 20px;
+}
+.field-name-text-text-input {
+  margin-left: 11px;
+}
+.ok-button-div {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.ok-button {
+  width: 100px;
+  height: 50px;
+  background-color: #2da042;
+  color: white;
+  border: white 5px solid;
+  border-radius: 20px;
+}
+.score-board {
+  font-size: 26px;
+}
+.card-card {
+  font-size: 50px;
+  text-align: center;
+  width: 150px;
+  height: 200px;
+  border: 2px solid black;
+}
+.card-card-div {
+  display: flex;
+  justify-content: space-evenly;
+}
+.card-card-text {
+  margin-top: 55px;
+}
+.player-score {
+  font-size: 30px;
+}
+.button-choose-player-div {
+  display: flex;
+  justify-content: center;
+}
+.button-choose-player-left {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  border-radius: 10px;
+  background-color: #2da042;
+}
+.button-choose-player-right {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  background-color: #b51010;
+  border-radius: 10px;
+  margin-left: 100px;
+}
+.center {
+  text-align: center;
+}
+.text-choose {
+  font-size: 30px;
+}
+.button-next {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  border-radius: 10px;
+  background-color: #2da042;
+}
 </style>
