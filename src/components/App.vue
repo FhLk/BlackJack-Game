@@ -25,7 +25,7 @@ const turn=ref(0); // use for change turn between player and bot (turn of player
 const isChoose=ref(false);// when bot thinking of choose
 const isBotStop=ref();// when bot choose 'Stop' = true
 const isPlayerStop=ref();// when player choose 'Stop' = true
-const isPlayerDrawn=ref();// when player choose 'Drawn' = true
+const GameField=ref(true)
 const isPlay=ref(0);//when Start this web
 
 let red=ref('');// ux of bot
@@ -187,9 +187,17 @@ const nextRound=()=>{
   //increase score from check condition by name 
   if(winnerRound.value==player.name){
     player.score++
+    player.round.push("Win")
+    bot.round.push("Lose")
   }
   else if(winnerRound.value==bot.name){
     bot.score++
+    player.round.push("Lose")
+    bot.round.push("Win")
+  }
+  else{
+    player.round.push("Drawn")
+    bot.round.push("Drawn")
   }
   //reset value and restart round
   card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
@@ -206,10 +214,41 @@ const nextRound=()=>{
 const play=()=>{
   isPlay.value++
 }
+
+const winGame=(scoreplayer,scorebot)=>{
+  if(scoreplayer == 2){
+    GameField.value=false
+    return player.name
+  }
+  else if(scorebot==2){
+    GameField.value=false
+    return bot.name
+  }
+}
+
+const restartGame=()=>{
+  card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
+  cardOfplayer.value=[]
+  cardOfbotShow.value=['?']
+  cardOfbotCal.value=[]
+  turn.value=0
+  GameField.value=true
+  player.score=0
+  player.round=[]
+  bot.score=0
+  bot.round=[]
+  isBotStop.value=undefined
+  isPlayerStop.value=undefined
+  Start()
+}
+
+const endGame=()=>{
+  location.reload();
+}
 </script>
  
 <template>
-<p>{{card}}</p>
+<!-- <p>{{card}}</p> -->
 
 <button @click="play" v-show="isPlay==0">Play</button>
 
@@ -224,7 +263,7 @@ const play=()=>{
 </div>
 
 <div class="gameplay" v-show="isPlay==2">
-<div class="field-game">
+<div class="field-game" v-show="GameField">
   <p>Score Board {{player.name}} {{player.score}}:{{bot.score}} {{bot.name}}</p>
 <p>{{bot.name}}: {{turn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="turn !=2 "> ? + </span>{{turn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
 <p v-show="isChoose"><span :style="sumOfbot < 18 ? red:''">Drawn</span>:<span :style="sumOfbot < 18 ? '':red">Stop</span></p>
@@ -237,10 +276,26 @@ const play=()=>{
 </div>
 <p>{{player.name}}: {{cardOfplayer}} : {{sumOfplayer}}</p>
 </div>
+
 <div class="winnerRound" v-show="turn==2">
-  THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}} score: +1
+  THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}}
 </div>
 <button @click="nextRound" v-show="turn==2" >Next Round</button>
+<p v-show="player.round.length !=0">History Round
+  <ul>
+    {{player.name}}
+    <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} :{{result}}</li>
+    {{bot.name}}
+     <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}</li>
+  </ul>
+</p>
+<div class="final-field" v-show="GameField==false">
+<div class="winnerGame">
+  THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
+</div>
+<button @click="restartGame">Play Agian</button>
+<button @click="endGame">End Game</button>
+</div>
 </div>
 </template>
  
