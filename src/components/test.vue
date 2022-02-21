@@ -66,6 +66,15 @@ card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
 Start();// call function for start game
 
+const CheckName=(playerName,BotName)=>{
+  if(playerName==''&&BotName==''){
+    return true
+  }
+  else{
+    return false
+  }
+}
+
 //Game play of player
 //when player clink Drawn
 const PlayerDrawn=()=>{
@@ -248,40 +257,97 @@ const endGame=()=>{
 </script>
  
 <template>
-<!-- <p>{{card}}</p> -->
+  <div class="body">
+    <div class="playbuttondiv">
+      <button @click="play" v-show="isPlay == 0" class="playbutton">
+        Play
+      </button>
+    </div>
+    <div class="field-name" v-show="isPlay == 1">
+      <div class="field-name-text">
+        <p class="field-name-text-text">Player Name:</p>
+        <input
+          type="text"
+          placeholder="Player Name...."
+          v-model="player.name"
+        />
+      </div>
+      <div class="field-name-text">
+        <p class="field-name-text-text">Com Name:</p>
+        <input
+          type="text"
+          placeholder="Com Name...."
+          v-model="bot.name"
+          class="field-name-text-text-input"
+        />
+      </div>
+      <div class="ok-button-div">
+        <button @click="play" class="ok-button" :disabled="CheckName(player.name,bot.name)">OK</button>
+      </div>
+    </div>
 
-<button @click="play" v-show="isPlay==0">Play</button>
-
-<div class="field-name" v-show="isPlay==1">
-<p>Player Name: 
-  <input type="text" placeholder="Player Name...." v-model="player.name">
-</p>
-<p>Com Name: 
-  <input type="text" placeholder="Com Name...." v-model="bot.name">
-</p>
-<button @click="play">OK</button>
-</div>
-
-<div class="gameplay" v-show="isPlay==2">
-<div class="field-game" v-show="GameField">
-  <p>Score Board {{player.name}} {{player.score}}:{{bot.score}} {{bot.name}}</p>
-<p>{{bot.name}}: {{turn == 2 ?  cardOfbotCal:cardOfbotShow}} : <span v-show="turn !=2 "> ? + </span>{{turn==2 ? sumOfbot:sumOfbot-firstofBot}}</p>
-<p v-show="isChoose"><span :style="sumOfbot < 18 ? red:''">Drawn</span>:<span :style="sumOfbot < 18 ? '':red">Stop</span></p>
-<p v-if="turn==0">-----Turn Of Player-----</p>
-<p v-else-if="turn==1">-----Turn Of COM1-----</p>
-<p v-else>-----Result-----</p>
-<div>
-  <button v-show="turn==0" @click="PlayerDrawn">Drawn</button>
-  <button v-show="turn==0" @click="PlayerStop">Stop</button>
-</div>
-<p>{{player.name}}: {{cardOfplayer}} : {{sumOfplayer}}</p>
-</div>
-
-<div class="winnerRound" v-show="turn==2">
-  THE WINNER THIS ROUND IS {{winRound(sumOfplayer,sumOfbot)}}
-</div>
-<button @click="nextRound" v-show="turn==2" >Next Round</button>
-<p v-show="player.round.length !=0">History Round
+    <div class="gameplay" v-show="isPlay == 2">
+      <div class="field-game">
+        <p class="score-board">
+          Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
+          {{ bot.name }}
+        </p>
+        <p class="player-score">
+          {{ bot.name }}:
+          {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
+        </p>
+        <div v-if="turn == 2" class="card-card-div">
+          <div v-for="card in cardOfbotCal" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>
+        </div>
+        <div v-else class="card-card-div">
+          <div v-for="card in cardOfbotShow" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>  
+        </div>
+        <div class="center">
+          <p v-show="isChoose" class="text-choose">
+            <span :style="sumOfbot < 18 ? red : ''">Drawn</span>:<span
+              :style="sumOfbot < 18 ? '' : red"
+              >Stop</span
+            >
+          </p>
+          <p v-if="turn == 0">-----Turn Of Player-----</p>
+          <p v-else-if="turn == 1">-----Turn Of COM1-----</p>
+          <div v-else>
+            <p>-----Result-----</p>
+            <div class="winnerRound" v-show="turn == 2">
+              THE WINNER THIS ROUND IS
+              {{ winRound(sumOfplayer, sumOfbot) }} score: +1
+            </div>
+            <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
+          </div>
+        </div>
+        <div class="button-choose-player-div">
+          <button
+            v-show="turn == 0"
+            @click="PlayerDrawn"
+            class="button-choose-player-left"
+          >
+            Drawn
+          </button>
+          <button
+            v-show="turn == 0"
+            @click="PlayerStop"
+            class="button-choose-player-right"
+          >
+            Stop
+          </button>
+        </div>
+        <p class="player-score">{{ player.name }}: {{ sumOfplayer }}</p>
+        <div class="card-card-div">
+          <div v-for="card in cardOfplayer" :key="card" class="card-card">
+            <p class="card-card-text">{{ card }}</p>
+          </div>
+        </div>
+      </div>
+      <p v-show="player.round.length !=0">History Round
   <ul>
     {{player.name}}
     <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} :{{result}}</li>
@@ -296,9 +362,113 @@ const endGame=()=>{
 <button @click="restartGame">Play Agian</button>
 <button @click="endGame">End Game</button>
 </div>
-</div>
+    </div>
+  </div>
 </template>
  
 <style>
-
+.body {
+  height: 100vh;
+}
+.playbutton {
+  background-color: #2da042;
+  color: white;
+  border: white 5px solid;
+  border-radius: 20px;
+  width: 300px;
+  height: 150px;
+  margin-top: 30vh;
+  font-size: 30px;
+}
+.playbuttondiv {
+  display: flex;
+  justify-content: center;
+}
+.field-name {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.field-name-text {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.field-name-text-text {
+  margin-top: 1rem;
+  margin-right: 20px;
+}
+.field-name-text-text-input {
+  margin-left: 11px;
+}
+.ok-button-div {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.ok-button {
+  width: 100px;
+  height: 50px;
+  background-color: #2da042;
+  color: white;
+  border: white 5px solid;
+  border-radius: 20px;
+}
+.score-board {
+  font-size: 26px;
+}
+.card-card {
+  font-size: 50px;
+  text-align: center;
+  width: 150px;
+  height: 200px;
+  border: 2px solid black;
+}
+.card-card-div {
+  display: flex;
+  justify-content: space-evenly;
+}
+.card-card-text {
+  margin-top: 55px;
+}
+.player-score {
+  font-size: 30px;
+}
+.button-choose-player-div {
+  display: flex;
+  justify-content: center;
+}
+.button-choose-player-left {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  border-radius: 10px;
+  background-color: #2da042;
+}
+.button-choose-player-right {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  background-color: #b51010;
+  border-radius: 10px;
+  margin-left: 100px;
+}
+.center {
+  text-align: center;
+}
+.text-choose {
+  font-size: 30px;
+}
+.button-next {
+  width: 120px;
+  height: 70px;
+  color: white;
+  border: white 5px solid;
+  border-radius: 10px;
+  background-color: #2da042;
+}
 </style>
