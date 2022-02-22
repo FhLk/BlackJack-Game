@@ -3,6 +3,7 @@ import { computed, reactive, ref } from 'vue';
 
 //Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
+const cardCheat=[9,10,11,12];
 
 //function randomCard
 function randomCard(arr){
@@ -48,6 +49,17 @@ const sumOfbot=computed(()=>{
 
 //when start first time this web-page
 function Start(){ 
+  if(bot.name.toLocaleLowerCase()=="gao"){
+    firstofBot.value=randomCard(cardCheat)
+    cardOfbotCal.value.push(firstofBot.value)
+    card.value.splice(card.value.indexOf(firstofBot.value),1)
+    
+    secondofBot=21-firstofBot.value
+    cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
+    cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
+    card.value.splice(card.value.indexOf(secondofBot),1)
+  }
+  else{
 firstofBot.value = randomCard(card.value)//get first card of bot
 cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
@@ -55,6 +67,7 @@ secondofBot = randomCard(card.value)//get second card of bot
 cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
 cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
+  }
 
 //player seem bot
 firstofPlayer = randomCard(card.value)
@@ -64,7 +77,6 @@ secondofPlayer = randomCard(card.value)
 cardOfplayer.value.push(secondofPlayer)
 card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
-Start();// call function for start game
 
 const CheckName=(playerName,BotName)=>{
   if(playerName==''&&BotName==''){
@@ -222,6 +234,9 @@ const nextRound=()=>{
 //use for show tag html 
 const play=()=>{
   isPlay.value++
+  if(isPlay.value==2){
+    Start();// call function for start game
+  }
 }
 
 const winGame=(scoreplayer,scorebot)=>{
@@ -287,7 +302,7 @@ const endGame=()=>{
     </div>
 
     <div class="gameplay" v-show="isPlay == 2">
-      <div class="field-game">
+      <div class="field-game" v-show="GameField">
         <p class="score-board">
           Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
           {{ bot.name }}
@@ -350,9 +365,15 @@ const endGame=()=>{
       <p v-show="player.round.length !=0">History Round
   <ul>
     {{player.name}}
-    <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} :{{result}}</li>
+    <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
+      <span v-if="result=='Win'">Score : +1</span>
+      <span v-else>Score +0</span>
+    </li>
     {{bot.name}}
-     <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}</li>
+     <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
+      <span v-if="result=='Win'">Score : +1</span>
+      <span v-else>Score +0</span>
+    </li>
   </ul>
 </p>
 <div class="final-field" v-show="GameField==false">
