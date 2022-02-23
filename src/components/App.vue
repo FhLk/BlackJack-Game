@@ -35,6 +35,7 @@ let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculat
 let secondofBot;// second card of bot
 let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
+let round=ref(1)
 
 //Calculator card of player
 const sumOfplayer=computed(()=>{
@@ -205,6 +206,7 @@ const winRound=(sumOfplayer,sumOfbot)=>{
 
 //when click start new round
 const nextRound=()=>{
+  round.value++
   //increase score from check condition by name 
   if(winnerRound.value==player.name){
     player.score++
@@ -263,6 +265,7 @@ const restartGame=()=>{
   bot.round=[]
   isBotStop.value=undefined
   isPlayerStop.value=undefined
+  round.value=1
   Start()
 }
 
@@ -304,8 +307,11 @@ const endGame=()=>{
     <div class="gameplay" v-show="isPlay == 2">
       <div class="field-game" v-show="GameField">
         <p class="score-board">
-          Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
-          {{ bot.name }}
+          Score Board 
+          <div>
+            {{ player.name }} | {{ player.score }}:{{ bot.score }} | {{ bot.name }}
+            </div>
+            <div>Round {{round}}</div>
         </p>
         <p class="player-score">
           {{ bot.name }}:
