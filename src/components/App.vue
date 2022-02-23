@@ -28,8 +28,8 @@ const isBotStop=ref();// when bot choose 'Stop' = true
 const isPlayerStop=ref();// when player choose 'Stop' = true
 const GameField=ref(true)
 const isPlay=ref(0);//when Start this web
-
 let red=ref('');// ux of bot
+
 
 let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculator on html)
 let secondofBot;// second card of bot
@@ -60,16 +60,16 @@ function Start(){
     card.value.splice(card.value.indexOf(secondofBot),1)
   }
   else{
-firstofBot.value = randomCard(card.value)//get first card of bot
-cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
-secondofBot = randomCard(card.value)//get second card of bot
-cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
+    firstofBot.value = randomCard(card.value)//get first card of bot
+    cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
+    card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
+    secondofBot = randomCard(card.value)//get second card of bot
+    cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
+    cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
+    card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
   }
 
-//player seem bot
+//player same bot
 firstofPlayer = randomCard(card.value)
 card.value.splice(card.value.indexOf(firstofPlayer),1)
 cardOfplayer.value.push(firstofPlayer)
@@ -116,12 +116,12 @@ function Bot(){
   isChoose.value=true;//assigned 'isChoose' use for show tag html
   //Check condition
   if(sumOfbot.value<18){// if Calculator card of bot less than 18
-    BotDrawn();//Bot Choose Drawn
     isBotStop.value=false//assigned 'isBotStop' use for process
+    BotDrawn();//Bot Choose Drawn
   }
   else{//if more than 18
-    BotStop();//Bot choose Stop
     isBotStop.value=true;//assigned 'isBotStop' use for process
+    BotStop();//Bot choose Stop
   }
 }
 
@@ -323,18 +323,18 @@ const endGame=()=>{
         </div>
         <div class="center">
           <p v-show="isChoose" class="text-choose">
-            <span :style="sumOfbot < 18 ? red : ''">Drawn</span>:<span
+            <span :style="sumOfbot < 18 ? red : ''">DRAWN</span>:<span
               :style="sumOfbot < 18 ? '' : red"
-              >Stop</span
+              >STAY</span
             >
           </p>
-          <p v-if="turn == 0">-----Turn Of Player-----</p>
-          <p v-else-if="turn == 1">-----Turn Of COM1-----</p>
+          <p v-if="turn == 0">-----Turn Of {{player.name}}-----</p>
+          <p v-else-if="turn == 1">-----Turn Of {{bot.name}}-----</p>
           <div v-else>
             <p>-----Result-----</p>
             <div class="winnerRound" v-show="turn == 2">
               THE WINNER THIS ROUND IS
-              {{ winRound(sumOfplayer, sumOfbot) }} score: +1
+              {{ winRound(sumOfplayer, sumOfbot) }}
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
@@ -345,14 +345,14 @@ const endGame=()=>{
             @click="PlayerDrawn"
             class="button-choose-player-left"
           >
-            Drawn
+            DRAWN
           </button>
           <button
             v-show="turn == 0"
             @click="PlayerStop"
             class="button-choose-player-right"
           >
-            Stop
+            STAY
           </button>
         </div>
         <p class="player-score">{{ player.name }}: {{ sumOfplayer }}</p>
