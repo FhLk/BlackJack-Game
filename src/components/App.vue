@@ -81,16 +81,6 @@ cardOfplayer.value.push(secondofPlayer)
 card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
 
-const CheckName=(playerName,BotName)=>{
-  if(playerName==''&&BotName==''){
-    return true
-  }
-  else{
-    return false
-  }
-}
-
-
 //Game play of player
 //when player clink Drawn
 const PlayerDrawn=()=>{
@@ -326,21 +316,23 @@ const closeHistory = () => {
             >&times;</button>
         </div>
         <div class="rule-body">
-          <p style="color: black;">- สุ่มจับการ์ด</p>
-          <p style="color: black;">- นำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
-          <p style="color: black;">- หากผู้เล่นคนใดมีค่าเท่ากับหรือใกล้เคียงมากที่สุด จะเป็นผู้ชนะ</p>
+          <p style="color: black;">- ผู้เล่นจะต้องนำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
+          <p style="color: black;">- โดยจะสามารถเลือก <a style="color: #11856d;">Draw</a> เพื่อจั่วการ์ดเพิ่ม หรือ <a style="color: #b51010;">Stay</a> เพื่อไม่จั่วการ์ด</p>
+          <p style="color: black;">- หากผู้เล่นฝ่ายใดมีค่าเท่ากับหรือใกล้เคียง 21 มากที่สุด จะเป็นผู้ชนะ</p>
+          <p style="color: black;">- ในกรณีที่ฝ่ายใดมีค่ามากกว่า 21 จะหมดสิทธิ์ชนะในทันที</p>
+          <p style="color: black;">- แต่หากทั้งคู่มีค่ามากกว่า 21 จะถือว่าเสมอ</p>
         </div>
       </div>
-
      
       <div class="field-game" v-show="GameField">
         <p class="score-board">
           Score Board <br>
-          {{ player.name }} | {{ player.score }} : {{ bot.score }} | {{ bot.name }} <br>
+         <a style="color: rgb(153, 190, 224);">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
+         <a style="color: rgb(226, 139, 139);">{{ bot.name }}</a> <br>
           Round : {{round}}
         </p>
         <p class="player-score">
-          {{ bot.name }} :
+          <a style="color: rgb(226, 139, 139);">{{ bot.name }}</a> :
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
@@ -358,11 +350,11 @@ const closeHistory = () => {
             <span :style="sumOfbot < 18 ? 'color : red' : ''">DRAW</span> : 
             <span :style="sumOfbot < 18 ? '' : 'color : red'"> STAY</span>
           </p>
-          <p :style="centerStyle" v-if="turn == 0">Turn Of {{ player.name }}</p>
-          <p :style="centerStyle" v-else-if="turn == 1">Turn Of {{bot.name}}</p>
+          <p :style="centerStyle" v-if="turn == 0">Turn Of <a style="color: rgb(153, 190, 224);">{{ player.name }}</a></p>
+          <p :style="centerStyle" v-else-if="turn == 1">Turn Of <a style="color: rgb(226, 139, 139);">{{bot.name}}</a></p>
           <div v-else>
             <div class="winnerRound" v-show="turn == 2">
-              THE WINNER THIS ROUND IS
+              THE WINNER THIS ROUND IS  
               {{ winRound(sumOfplayer, sumOfbot) }} <br> score: +1
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
@@ -384,7 +376,7 @@ const closeHistory = () => {
             STAY
           </button>
         </div>
-        <p class="player-score">{{ player.name }} : {{ sumOfplayer }}</p>
+        <p class="player-score"><a style="color: rgb(153, 190, 224);">{{ player.name }}</a> : {{ sumOfplayer }}</p>
         <div class="card-card-div">
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
@@ -537,7 +529,7 @@ const closeHistory = () => {
   border-radius: 10px;
   z-index: 10;
   background-color: white;
-  width: 650px;
+  width: 800px;
   max-width: 80%;
   color: black;
   border: black 2px solid;
