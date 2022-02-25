@@ -1,6 +1,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
-
+const RuleButton = ref(true);
+const centerStyle = "font-size: 20px; margin-top: 2%; font-weight: 600"
 //Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
 const cardCheat=[9,10,11,12];
@@ -35,6 +36,7 @@ let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculat
 let secondofBot;// second card of bot
 let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
+let round=ref(1)
 
 //Calculator card of player
 const sumOfplayer=computed(()=>{
@@ -86,6 +88,7 @@ const CheckName=(playerName,BotName)=>{
     return false
   }
 }
+
 
 //Game play of player
 //when player clink Drawn
@@ -166,7 +169,6 @@ function BotStop(){
     if(isBotStop.value==isPlayerStop.value){
       turn.value=2;//change to turn of result
     }
-
   },6000)
 }
 
@@ -205,6 +207,7 @@ const winRound=(sumOfplayer,sumOfbot)=>{
 
 //when click start new round
 const nextRound=()=>{
+  round.value++
   //increase score from check condition by name 
   if(winnerRound.value==player.name){
     player.score++
@@ -263,35 +266,45 @@ const restartGame=()=>{
   bot.round=[]
   isBotStop.value=undefined
   isPlayerStop.value=undefined
+  round.value = 1
   Start()
 }
 
 const endGame=()=>{
   location.reload();
 }
+const closeRule = () => {
+  RuleButton.value = false;
+}
 </script>
  
 <template>
-  <div class="body">
+  <div class="body" >
     <div class="playbuttondiv">
+      <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
       <button @click="play" v-show="isPlay == 0" class="playbutton">
         Play
       </button>
     </div>
+
     <div class="field-name" v-show="isPlay == 1">
-      <div class="field-name-text">
-        <p class="field-name-text-text">Player Name:</p>
+      <div class="field-topic">
+        <h2>WELCOME TO BLACKJACK GAMES !</h2>
+      </div>
+      <div class="field-name-text">         
+        <!--<label class="field-name-text-text">Player Name :</label>-->
         <input
           type="text"
           placeholder="Player Name...."
           v-model="player.name"
+          class="field-name-text-text-input"
         />
       </div>
       <div class="field-name-text">
-        <p class="field-name-text-text">Com Name:</p>
+        <!--<label class="field-name-text-text">Computer Name :</label>-->
         <input
           type="text"
-          placeholder="Com Name...."
+          placeholder="Computer Name...."
           v-model="bot.name"
           class="field-name-text-text-input"
         />
@@ -302,13 +315,29 @@ const endGame=()=>{
     </div>
 
     <div class="gameplay" v-show="isPlay == 2">
+      <div class="rule" v-if="RuleButton == true">
+        <div class="rule-header">
+          <div class="rule-title">BlackJack Rule</div>
+          <button class="close-rule"
+            @click="closeRule"
+            >&times;</button>
+        </div>
+        <div class="rule-body">
+          <p style="color: black;">- สุ่มจับการ์ด</p>
+          <p style="color: black;">- นำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
+          <p style="color: black;">- หากผู้เล่นคนใดมีค่าเท่ากับหรือใกล้เคียงมากที่สุด จะเป็นผู้ชนะ</p>
+        </div>
+      </div>
+
+     
       <div class="field-game" v-show="GameField">
         <p class="score-board">
-          Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
-          {{ bot.name }}
+          Score Board <br>
+          {{ player.name }} | {{ player.score }} : {{ bot.score }} | {{ bot.name }} <br>
+          Round : {{round}}
         </p>
         <p class="player-score">
-          {{ bot.name }}:
+          {{ bot.name }} :
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
@@ -321,48 +350,48 @@ const endGame=()=>{
             <p class="card-card-text">{{ card }}</p>
           </div>  
         </div>
+      </div>
         <div class="center">
           <p v-show="isChoose" class="text-choose">
-            <span :style="sumOfbot < 18 ? red : ''">Drawn</span>:<span
-              :style="sumOfbot < 18 ? '' : red"
-              >Stop</span
+            <span :style="sumOfbot < 18 ? 'color : #b51010' : ''">DRAW</span> : 
+            <span :style="sumOfbot < 18 ? '' : 'color : #b51010'"> STAY</span
             >
           </p>
-          <p v-if="turn == 0">-----Turn Of Player-----</p>
-          <p v-else-if="turn == 1">-----Turn Of COM1-----</p>
+          <p :style="centerStyle" v-if="turn == 0">Turn Of {{ player.name }}</p>
+          <p :style="centerStyle" v-else-if="turn == 1">Turn Of {{bot.name}}</p>
           <div v-else>
-            <p>-----Result-----</p>
+            <p :style="centerStyle">----- Result -----</p>
             <div class="winnerRound" v-show="turn == 2">
               THE WINNER THIS ROUND IS
               {{ winRound(sumOfplayer, sumOfbot) }} score: +1
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
-        </div>
+        </div> 
         <div class="button-choose-player-div">
           <button
             v-show="turn == 0"
             @click="PlayerDrawn"
             class="button-choose-player-left"
           >
-            Drawn
+            DRAW
           </button>
           <button
             v-show="turn == 0"
             @click="PlayerStop"
             class="button-choose-player-right"
           >
-            Stop
+            STAY
           </button>
         </div>
-        <p class="player-score">{{ player.name }}: {{ sumOfplayer }}</p>
+        <p class="player-score">{{ player.name }} : {{ sumOfplayer }}</p>
         <div class="card-card-div">
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
           </div>
         </div>
       </div>
-      <p v-show="player.round.length !=0">History Round
+      <p class="history" v-show="player.round.length !=0" style="font-weight: 520;">History Round
   <ul>
     {{player.name}}
     <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
@@ -376,46 +405,147 @@ const endGame=()=>{
     </li>
   </ul>
 </p>
-<div class="final-field" v-show="GameField==false">
-<div class="winnerGame">
-  THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
-</div>
-<button @click="restartGame">Play Agian</button>
-<button @click="endGame">End Game</button>
-</div>
+    <div class="final-field" v-show="GameField==false">
+      <div class="winnerGame">
+        THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
+      </div>
+    <div class="final-field-button">
+      <button class="restartButton" @click="restartGame">Play Agian</button>
+      <button class="endGame" @click="endGame">End Game</button>
+    </div>
     </div>
   </div>
+  
+
 </template>
- 
+
 <style>
-.body {
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap');
+.body , .html {
+  background-color: #0B5345;
+  color: white;
+  font-family: 'Jost', sans-serif;
+  background-size: cover;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 100vh;
 }
-.playbutton {
+.header{
+  margin-bottom: 30px;
+  font-size: 50px;
+}
+.history{
+  margin-top: 2%;
+  padding-left: 2%;
+  font-size: 25px;
+}
+.rule{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 10px;
+  z-index: 10;
+  background-color: white;
+  width: 650px;
+  max-width: 80%;
+  color: black;
+  border: black 2px solid;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.rule-header{
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid black;
+}
+.rule-header .rule-title{
+  font-size: 35px;
+  font-weight: bold;
+  padding-left: 1%;
+}
+.rule-header .close-rule{
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 35px;
+  font-weight: bold;
+  
+}
+.rule-header .close-rule:hover{
+  color: red;
+}
+.rule-body{
+  padding: 10px 15px;
+  font-size: 20px;
+  font-weight: bold;
+  padding-left: 6%;
+
+}
+.gameplay{
+  padding-left: 5%;
+}
+.winnerRound {
+  font-size: 20px; 
+  margin-bottom: 2%;
+}
+.restartButton{
   background-color: #2da042;
   color: white;
   border: white 5px solid;
   border-radius: 20px;
-  width: 300px;
-  height: 150px;
-  margin-top: 30vh;
+}
+.endGameBtn{
+  background-color: #b51010;
+  color: white;
+  border: white 5px solid;
+  border-radius: 20px;
+}
+.playbutton {
+  width: 200px;
+  height: 85px;
   font-size: 30px;
+  background-color: white;
+  color: #11856d;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.playbutton:hover{
+  background-color: #033326;
+  color: white;
+  border: #033326 5px solid;
 }
 .playbuttondiv {
-  display: flex;
-  justify-content: center;
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
 }
 .field-name {
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  text-align: center;     
+}
+::placeholder {
+  color: rgba(54, 54, 54, 0.815);
+  padding: 10px;
 }
 .field-name-text {
+  border-radius: 100px;
   margin-top: 3rem;
   display: flex;
   justify-content: center;
   align-content: center;
+  
 }
 .field-name-text-text {
   margin-top: 1rem;
@@ -423,6 +553,19 @@ const endGame=()=>{
 }
 .field-name-text-text-input {
   margin-left: 11px;
+  width: 85%;
+  border: solid #11856d;
+  border-radius: 5px;
+  height: 65px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.field-name-text-text-input:hover{
+  border-color: #69bdac;
+}
+.final-field-button{
+  margin-top: 2%;
+  display: flex;
+  justify-content: center;
 }
 .ok-button-div {
   margin-top: 2rem;
@@ -430,29 +573,45 @@ const endGame=()=>{
   justify-content: center;
 }
 .ok-button {
+  cursor: pointer;
+  font-weight: 700;
   width: 100px;
   height: 50px;
-  background-color: #2da042;
-  color: white;
+  background-color: white;
+  color: #2da042;
   border: white 5px solid;
-  border-radius: 20px;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.ok-button:hover{
+  background-color: #177428;
+  color: white;
+  border: #177428 5px solid;
 }
 .score-board {
   font-size: 26px;
+  text-align: center;
+  padding-top: 2%;
 }
 .card-card {
   font-size: 50px;
+  font-family: 'Gill Sans MT';
   text-align: center;
   width: 150px;
   height: 200px;
-  border: 2px solid black;
+  border: 2px solid ;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .card-card-div {
   display: flex;
   justify-content: space-evenly;
+
 }
 .card-card-text {
   margin-top: 55px;
+  color: black;
 }
 .player-score {
   font-size: 30px;
@@ -463,33 +622,56 @@ const endGame=()=>{
 }
 .button-choose-player-left {
   width: 120px;
-  height: 70px;
-  color: white;
+  height: 55px;
+  font-weight: 700;
+  background-color: white;
+  color: #177428;
   border: white 5px solid;
-  border-radius: 10px;
-  background-color: #2da042;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.button-choose-player-left:hover{
+  background-color: #177428;
+  border: #177428 5px solid;
+  color: white;
 }
 .button-choose-player-right {
-  width: 120px;
-  height: 70px;
-  color: white;
-  border: white 5px solid;
-  background-color: #b51010;
-  border-radius: 10px;
   margin-left: 100px;
+  width: 120px;
+  height: 55px;
+  font-weight: 700;
+  background-color: white;
+  color: #b51010;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.button-choose-player-right:hover{
+  background-color: #b51010;
+  border: #b51010 5px solid;
+  color: white;
 }
 .center {
   text-align: center;
 }
 .text-choose {
   font-size: 30px;
+  margin-top: 2%;
 }
 .button-next {
   width: 120px;
   height: 70px;
+  font-weight: 700;
+  background-color: #4446c2;
   color: white;
-  border: white 5px solid;
-  border-radius: 10px;
-  background-color: #2da042;
+  border: #4446c2 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
+.button-next:hover{
+  background-color: white;
+  color: #4446c2;
+  border: white 5px solid;
+}
+
 </style>
