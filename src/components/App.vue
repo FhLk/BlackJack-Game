@@ -14,7 +14,7 @@ function randomCard(arr){
 
 //Oject of Player
 const player=reactive({name:'',score:0,round:[]})
-const bot=reactive({name:'',score:0,round:[]})
+const bot=reactive({name:'Computer',score:0,round:[]})
 
 //Card of Player
 const cardOfplayer=ref([])
@@ -243,6 +243,12 @@ const play=()=>{
   }
 }
 
+//use to alert empty name
+const go = (playerName)=>{
+  (playerName=='' ? alert("Please enter your player name!!") : play())
+}
+
+
 const winGame=(scoreplayer,scorebot)=>{
   if(scoreplayer == 2){
     GameField.value=false
@@ -299,25 +305,15 @@ const closeHistory = () => {
         <h1>WELCOME TO BLACKJACK GAMES !</h1>
       </div>
       <div class="field-name-text">         
-        <!--<label class="field-name-text-text">Player Name :</label>-->
         <input
           type="text"
-          placeholder="Player Name...."
+          placeholder="Enter Your Name..."
           v-model="player.name"
           class="field-name-text-text-input"
         />
       </div>
-      <div class="field-name-text">
-        <!--<label class="field-name-text-text">Computer Name :</label>-->
-        <input
-          type="text"
-          placeholder="Computer Name...."
-          v-model="bot.name"
-          class="field-name-text-text-input"
-        />
-      </div>
       <div class="ok-button-div">
-        <button @click="play" class="ok-button" :disabled="CheckName(player.name,bot.name)">OK</button>
+        <button @click="go(player.name)" class="ok-button" >GO</button>
       </div>
     </div>
 
