@@ -1,7 +1,8 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
 const RuleButton = ref(true);
-const centerStyle = "font-size: 20px; margin-top: 2%; font-weight: 600"
+const HistoryButton = ref(false);
+const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
 //Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
 const cardCheat=[9,10,11,12];
@@ -133,7 +134,7 @@ function BotDrawn(){
   //tell to player that bot choose this 
   setTimeout(()=>{
     red.value='color:red'//change font-color to red
-  },3000)
+  },2000)
 
   //seem player clink drawn crad
   setTimeout(()=>{
@@ -149,7 +150,7 @@ function BotDrawn(){
       isChoose.value=false;
       red.value=''
     }
-  },6000)
+  },3000)
 }
 
 //if Bot choose Stop
@@ -269,15 +270,21 @@ const restartGame=()=>{
   round.value = 1
   Start()
 }
-
 const endGame=()=>{
+  alert('Thank You For Playing :)')
   location.reload();
 }
 const closeRule = () => {
   RuleButton.value = false;
 }
+const openHistory = () => {
+  HistoryButton.value = true;
+}
+const closeHistory = () => {
+  HistoryButton.value = false;
+}
 </script>
- 
+
 <template>
   <div class="body" >
     <div class="playbuttondiv">
@@ -289,7 +296,7 @@ const closeRule = () => {
 
     <div class="field-name" v-show="isPlay == 1">
       <div class="field-topic">
-        <h2>WELCOME TO BLACKJACK GAMES !</h2>
+        <h1>WELCOME TO BLACKJACK GAMES !</h1>
       </div>
       <div class="field-name-text">         
         <!--<label class="field-name-text-text">Player Name :</label>-->
@@ -350,20 +357,17 @@ const closeRule = () => {
             <p class="card-card-text">{{ card }}</p>
           </div>  
         </div>
-      </div>
         <div class="center">
           <p v-show="isChoose" class="text-choose">
-            <span :style="sumOfbot < 18 ? 'color : #b51010' : ''">DRAW</span> : 
-            <span :style="sumOfbot < 18 ? '' : 'color : #b51010'"> STAY</span
-            >
+            <span :style="sumOfbot < 18 ? 'color : red' : ''">DRAW</span> : 
+            <span :style="sumOfbot < 18 ? '' : 'color : red'"> STAY</span>
           </p>
           <p :style="centerStyle" v-if="turn == 0">Turn Of {{ player.name }}</p>
           <p :style="centerStyle" v-else-if="turn == 1">Turn Of {{bot.name}}</p>
           <div v-else>
-            <p :style="centerStyle">----- Result -----</p>
             <div class="winnerRound" v-show="turn == 2">
               THE WINNER THIS ROUND IS
-              {{ winRound(sumOfplayer, sumOfbot) }} score: +1
+              {{ winRound(sumOfplayer, sumOfbot) }} <br> score: +1
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
@@ -390,38 +394,64 @@ const closeRule = () => {
             <p class="card-card-text">{{ card }}</p>
           </div>
         </div>
+        <div style="">
+        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
+        </div>
+        <div class="history" v-if="HistoryButton == true">
+          <div class="history-header">
+            <div class="history-title">History</div>
+            <button class="close-history"
+            @click="closeHistory"
+            >&times;</button>
+          </div>
+          <div class="history-body">
+            <ul>
+              {{player.name}}
+              <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
+                <span v-if="result=='Win'">Score : +1</span>
+                <span v-else>Score +0</span>
+               </li> <br>
+              {{bot.name}}
+              <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
+                <span v-if="result=='Win'">Score : +1</span>
+                <span v-else>Score +0</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <p class="history" v-show="player.round.length !=0" style="font-weight: 520;">History Round
-  <ul>
-    {{player.name}}
-    <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
-      <span v-if="result=='Win'">Score : +1</span>
-      <span v-else>Score +0</span>
-    </li>
-    {{bot.name}}
-     <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
-      <span v-if="result=='Win'">Score : +1</span>
-      <span v-else>Score +0</span>
-    </li>
-  </ul>
-</p>
+    </div>
     <div class="final-field" v-show="GameField==false">
+    <p style="font-size: 50px; text-align: center; padding-top: 2%;">Result</p>
+      <ul style="text-align: center;list-style-type: none;">
+        {{player.name}}
+        <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
+          <span v-if="result=='Win'">Score : +1</span>
+          <span v-else>Score +0</span>
+        </li> <br>
+        {{bot.name}}
+        <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
+          <span v-if="result=='Win'">Score : +1</span>
+          <span v-else>Score +0</span>
+        </li>
+      </ul>
       <div class="winnerGame">
-        THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
+          THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
       </div>
-    <div class="final-field-button">
-      <button class="restartButton" @click="restartGame">Play Agian</button>
-      <button class="endGame" @click="endGame">End Game</button>
+      <div class="final-field-button">
+          <button class="restartButton" @click="restartGame">Play Agian</button>
+          <button class="endGame" @click="endGame">End Game</button>
+        </div>
     </div>
-    </div>
-  </div>
-  
-
+      
+  </div>   
+   
 </template>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap');
 .body , .html {
+  position:fixed; 
   background-color: #0B5345;
   color: white;
   font-family: 'Jost', sans-serif;
@@ -433,14 +463,75 @@ const closeRule = () => {
   right: 0;
   height: 100vh;
 }
+.winnerGame{
+  font-size: 60px;
+  font-weight: 700; 
+  text-align: center;
+  padding-top: 3%;
+  padding-bottom: 3%;
+}
 .header{
   margin-bottom: 30px;
   font-size: 50px;
 }
+.historyBtn{
+  width: 120px;
+  height: 55px; 
+  font-weight: 700;
+  background-color: white;
+  color: #e76f1f;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+  display: block;
+  margin: auto;
+}
+.historyBtn:hover{
+  background-color: #e76f1f;
+  color: white;
+  border: #e76f1f 5px solid;
+}
 .history{
-  margin-top: 2%;
-  padding-left: 2%;
-  font-size: 25px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 10px;
+  z-index: 10;
+  background-color: white;
+  width: 650px;
+  max-width: 80%;
+  color: black;
+  border: black 2px solid;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.history-header{
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid black;
+}
+.history-header .history-title{
+  font-size: 35px;
+  font-weight: bold;
+  padding-left: 1%;
+}
+.history-header .close-history{
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 35px;
+  font-weight: bold;
+}
+.history-header .close-history:hover{
+  color: red;
+}
+.history-body{
+  padding: 10px 15px;
+  font-size: 20px;
+  font-weight: bold;
 }
 .rule{
   position: fixed;
@@ -475,7 +566,6 @@ const closeRule = () => {
   background: none;
   font-size: 35px;
   font-weight: bold;
-  
 }
 .rule-header .close-rule:hover{
   color: red;
@@ -485,26 +575,47 @@ const closeRule = () => {
   font-size: 20px;
   font-weight: bold;
   padding-left: 6%;
-
 }
 .gameplay{
   padding-left: 5%;
 }
 .winnerRound {
   font-size: 20px; 
-  margin-bottom: 2%;
+  padding-bottom: 1%;
+  padding-top: 1%
 }
 .restartButton{
-  background-color: #2da042;
-  color: white;
+  width: 120px;
+  height: 55px;
+  font-size: 20px;
+  font-weight: 700;
+  background-color: white;
+  color: #11856d;
   border: white 5px solid;
-  border-radius: 20px;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
-.endGameBtn{
+.restartButton:hover{
+  background-color: #033326;
+  color: white;
+  border: #033326 5px solid;
+}
+.endGame{
+  width: 120px;
+  height: 55px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-left: 100px;
+  background-color: white;
+  color: #b51010;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.endGame:hover{
   background-color: #b51010;
   color: white;
-  border: white 5px solid;
-  border-radius: 20px;
+  border: #b51010 5px solid;
 }
 .playbutton {
   width: 200px;
@@ -544,8 +655,7 @@ const closeRule = () => {
   margin-top: 3rem;
   display: flex;
   justify-content: center;
-  align-content: center;
-  
+  align-content: center; 
 }
 .field-name-text-text {
   margin-top: 1rem;
@@ -560,7 +670,14 @@ const closeRule = () => {
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .field-name-text-text-input:hover{
-  border-color: #69bdac;
+  border-color: #80e0cd;
+}
+.final-field{
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
 }
 .final-field-button{
   margin-top: 2%;
@@ -575,23 +692,23 @@ const closeRule = () => {
 .ok-button {
   cursor: pointer;
   font-weight: 700;
+  font-size: 20px;
   width: 100px;
   height: 50px;
   background-color: white;
-  color: #2da042;
+  color: #11856d;  
   border: white 5px solid;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .ok-button:hover{
-  background-color: #177428;
+  background-color: #033326;
   color: white;
-  border: #177428 5px solid;
+  border: #033326 5px solid;
 }
 .score-board {
   font-size: 26px;
   text-align: center;
-  padding-top: 2%;
 }
 .card-card {
   font-size: 50px;
@@ -607,7 +724,6 @@ const closeRule = () => {
 .card-card-div {
   display: flex;
   justify-content: space-evenly;
-
 }
 .card-card-text {
   margin-top: 55px;
@@ -622,17 +738,18 @@ const closeRule = () => {
 }
 .button-choose-player-left {
   width: 120px;
-  height: 55px;
+  height: 55px; 
   font-weight: 700;
+  font-size: 20px;
   background-color: white;
-  color: #177428;
+  color: #11856d;
   border: white 5px solid;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .button-choose-player-left:hover{
-  background-color: #177428;
-  border: #177428 5px solid;
+  background-color: #033326;
+  border: #033326 5px solid;
   color: white;
 }
 .button-choose-player-right {
@@ -640,6 +757,7 @@ const closeRule = () => {
   width: 120px;
   height: 55px;
   font-weight: 700;
+  font-size: 20px;
   background-color: white;
   color: #b51010;
   border: white 5px solid;
@@ -653,14 +771,14 @@ const closeRule = () => {
 }
 .center {
   text-align: center;
+  padding-top: 20px;
 }
 .text-choose {
   font-size: 30px;
-  margin-top: 2%;
 }
 .button-next {
   width: 120px;
-  height: 70px;
+  height: 60px;
   font-weight: 700;
   background-color: #4446c2;
   color: white;
@@ -673,5 +791,4 @@ const closeRule = () => {
   color: #4446c2;
   border: white 5px solid;
 }
-
 </style>
