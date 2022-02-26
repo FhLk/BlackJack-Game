@@ -165,34 +165,35 @@ function BotStop(){
 
 //find the winner this round
 const winnerRound=ref('')
+
 //Get Sum of Bot and player to find winner this round 
 const winRound=(sumOfplayer,sumOfbot)=>{
   //check condition and assigned value to 'winnerRound'
   if(sumOfplayer > 21 && sumOfbot > 21 ){
-    winnerRound.value='Drawn'
-    return 'Drawn';
+    winnerRound.value='Draw'
+    return 'DRAW';
   }
 
   if(sumOfplayer>sumOfbot && sumOfplayer <= 21 ){
     winnerRound.value=player.name
-    return player.name
+    return `THE WINNER IN THIS ROUND IS ${player.name} !`;
   }
   else if(sumOfplayer>sumOfbot && sumOfplayer > 21){
     winnerRound.value=bot.name
-    return bot.name
+    return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
   }
 
   if(sumOfplayer<sumOfbot && sumOfbot <=21){
     winnerRound.value= bot.name
-    return bot.name;
+    return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
   }
   else if(sumOfplayer<sumOfbot && sumOfbot > 21){
     winnerRound.value=player.name
-    return player.name
+    return `THE WINNER IN THIS ROUND IS ${player.name} !`;
   }
   else{
-    winnerRound.value='Drawn'
-    return'Drawn';
+    winnerRound.value='Draw'
+    return'DRAW';
   }
 }
 
@@ -211,8 +212,8 @@ const nextRound=()=>{
     bot.round.push("Win")
   }
   else{
-    player.round.push("Drawn")
-    bot.round.push("Drawn")
+    player.round.push("Draw")
+    bot.round.push("Draw")
   }
   //reset value and restart round
   card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
@@ -235,7 +236,7 @@ const play=()=>{
 
 //use to alert empty name
 const go = (playerName)=>{
-  (playerName=='' ? alert("Please enter your player name!!") : play())
+  (playerName=='' ? alert("Please enter your name !") : play())
 }
 
 
@@ -327,12 +328,12 @@ const closeHistory = () => {
       <div class="field-game" v-show="GameField">
         <p class="score-board">
           Score Board <br>
-         <a style="color: rgb(153, 190, 224);">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
-         <a style="color: rgb(226, 139, 139);">{{ bot.name }}</a> <br>
+         <a style="color: #EDE682;">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
+         <a style="color: #EA99D5;">{{ bot.name }}</a> <br>
           Round : {{round}}
         </p>
         <p class="player-score">
-          <a style="color: rgb(226, 139, 139);">{{ bot.name }}</a> :
+          <a style="color: #EA99D5;">{{ bot.name }}</a> :
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
@@ -347,15 +348,14 @@ const closeHistory = () => {
         </div>
         <div class="center">
           <p v-show="isChoose" class="text-choose">
-            <span :style="sumOfbot < 18 ? 'color : red' : ''">DRAW</span> : 
-            <span :style="sumOfbot < 18 ? '' : 'color : red'"> STAY</span>
+            <span :style="sumOfbot < 18 ? red : ''">DRAW</span> : 
+            <span :style="sumOfbot < 18 ? '' : red"> STAY</span>
           </p>
-          <p :style="centerStyle" v-if="turn == 0">Turn Of <a style="color: rgb(153, 190, 224);">{{ player.name }}</a></p>
-          <p :style="centerStyle" v-else-if="turn == 1">Turn Of <a style="color: rgb(226, 139, 139);">{{bot.name}}</a></p>
+          <p :style="centerStyle" v-if="turn == 0">Turn Of <a style="color: #EDE682;">{{ player.name }}</a></p>
+          <p :style="centerStyle" v-else-if="turn == 1">Turn Of <a style="color: #EA99D5;">{{bot.name}}</a></p>
           <div v-else>
             <div class="winnerRound" v-show="turn == 2">
-              THE WINNER THIS ROUND IS  
-              {{ winRound(sumOfplayer, sumOfbot) }} <br> score: +1
+              {{ winRound(sumOfplayer, sumOfbot) }} <br> 
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
@@ -376,7 +376,7 @@ const closeHistory = () => {
             STAY
           </button>
         </div>
-        <p class="player-score"><a style="color: rgb(153, 190, 224);">{{ player.name }}</a> : {{ sumOfplayer }}</p>
+        <p class="player-score"><a style="color: #EDE682;">{{ player.name }}</a> : {{ sumOfplayer }}</p>
         <div class="card-card-div">
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
@@ -394,15 +394,15 @@ const closeHistory = () => {
           </div>
           <div class="history-body">
             <ul>
-              {{player.name}}
+              <a style="color: #008E89;">{{ player.name }}</a>
               <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
-                <span v-if="result=='Win'">Score : +1</span>
-                <span v-else>Score +0</span>
+                <span v-if="result=='Win'"><a style="color: red;">+1</a></span>
+                <span v-else>+0</span>
                </li> <br>
-              {{bot.name}}
+              <a style="color: #008E89;">{{bot.name}}</a>
               <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
-                <span v-if="result=='Win'">Score : +1</span>
-                <span v-else>Score +0</span>
+                <span v-if="result=='Win'"><a style="color: red;">+1</a></span>
+                <span v-else>+0</span>
               </li>
             </ul>
           </div>
@@ -411,20 +411,20 @@ const closeHistory = () => {
     </div>
     <div class="final-field" v-show="GameField==false">
     <p style="font-size: 50px; text-align: center; padding-top: 2%;">Result</p>
-      <ul style="text-align: center;list-style-type: none;">
+      <ul style="text-align: center;list-style-type: none; font-size: 25px;">
         {{player.name}}
         <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
-          <span v-if="result=='Win'">Score : +1</span>
-          <span v-else>Score +0</span>
+          <span v-if="result=='Win'">+1</span>
+          <span v-else>+0</span>
         </li> <br>
         {{bot.name}}
         <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
-          <span v-if="result=='Win'">Score : +1</span>
-          <span v-else>Score +0</span>
+          <span v-if="result=='Win'">+1</span>
+          <span v-else>+0</span>
         </li>
       </ul>
       <div class="winnerGame">
-          THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
+          THE WINNER IS {{winGame(player.score,bot.score)}} !!!!!!
       </div>
       <div class="final-field-button">
           <button class="restartButton" @click="restartGame">Play Agian</button>
@@ -706,7 +706,8 @@ const closeHistory = () => {
   height: 200px;
   border: 2px solid ;
   border-radius: 10px;
-  background-color: white;
+  background-image: url(../assets/bg-card.jpg);
+  background-size: cover;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .card-card-div {
@@ -773,6 +774,7 @@ const closeHistory = () => {
   border: #4446c2 5px solid;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+  margin-top: 5px;
 }
 .button-next:hover{
   background-color: white;
