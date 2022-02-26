@@ -280,6 +280,7 @@ const closeRule = () => {
  
 <template>
   <div class="body" >
+ 
     <div class="playbuttondiv">
       <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
       <button @click="play" v-show="isPlay == 0" class="playbutton">
@@ -313,7 +314,7 @@ const closeRule = () => {
         <button @click="play" class="ok-button" :disabled="CheckName(player.name,bot.name)">OK</button>
       </div>
     </div>
-
+<div class="game-mix" v-show="isPlay == 2">
     <div class="gameplay" v-show="isPlay == 2">
       <div class="rule" v-if="RuleButton == true">
         <div class="rule-header">
@@ -323,9 +324,9 @@ const closeRule = () => {
             >&times;</button>
         </div>
         <div class="rule-body">
-          <p style="color: black;">- สุ่มจับการ์ด</p>
-          <p style="color: black;">- นำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
-          <p style="color: black;">- หากผู้เล่นคนใดมีค่าเท่ากับหรือใกล้เคียงมากที่สุด จะเป็นผู้ชนะ</p>
+          <p style="color: white;">- สุ่มจับการ์ด</p>
+          <p style="color: white;">- นำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
+          <p style="color: white;">- หากผู้เล่นคนใดมีค่าเท่ากับหรือใกล้เคียงมากที่สุด จะเป็นผู้ชนะ</p>
         </div>
       </div>
 
@@ -341,16 +342,17 @@ const closeRule = () => {
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
-          <div v-for="card in cardOfbotCal" :key="card" class="card-card">
-            <p class="card-card-text">{{ card }}</p>
+          <div v-for="card in cardOfbotCal" :key="card" class="card-card-bot">
+            <p class="card-card-text-bot">{{ card }}</p>
           </div>
         </div>
         <div v-else class="card-card-div">
-          <div v-for="card in cardOfbotShow" :key="card" class="card-card">
-            <p class="card-card-text">{{ card }}</p>
+          <div v-for="card in cardOfbotShow" :key="card" class="card-card-bot">
+            <p class="card-card-text-bot">{{ card }}</p>
           </div>  
         </div>
       </div>
+      
         <div class="center">
           <p v-show="isChoose" class="text-choose">
             <span :style="sumOfbot < 18 ? 'color : #b51010' : ''">DRAW</span> : 
@@ -391,6 +393,7 @@ const closeRule = () => {
           </div>
         </div>
       </div>
+      
       <p class="history" v-show="player.round.length !=0" style="font-weight: 520;">History Round
   <ul>
     {{player.name}}
@@ -405,6 +408,8 @@ const closeRule = () => {
     </li>
   </ul>
 </p>
+
+<div class ="final-mix" v-show="GameField==false">
     <div class="final-field" v-show="GameField==false">
       <div class="winnerGame">
         THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
@@ -414,8 +419,9 @@ const closeRule = () => {
       <button class="endGame" @click="endGame">End Game</button>
     </div>
     </div>
+    </div>
   </div>
-  
+  </div>
 
 </template>
 
@@ -423,6 +429,7 @@ const closeRule = () => {
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap');
 .body , .html {
   background-color: #0B5345;
+   animation: body  4s ease infinite;;
   color: white;
   font-family: 'Jost', sans-serif;
   background-size: cover;
@@ -433,6 +440,13 @@ const closeRule = () => {
   right: 0;
   height: 100vh;
 }
+
+
+@keyframes body{
+  from {background-color: #0B5345;}
+  to {background-color: black;}
+  /* to {background-color: #7DCEA0 ;} */
+}
 .header{
   margin-bottom: 30px;
   font-size: 50px;
@@ -441,6 +455,7 @@ const closeRule = () => {
   margin-top: 2%;
   padding-left: 2%;
   font-size: 25px;
+  background-color: #0B5345;
 }
 .rule{
   position: fixed;
@@ -449,19 +464,19 @@ const closeRule = () => {
   transform: translate(-50%,-50%);
   border-radius: 10px;
   z-index: 10;
-  background-color: white;
+  background-color: black;
   width: 650px;
   max-width: 80%;
-  color: black;
-  border: black 2px solid;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+  color: white;
+  border: white 2px solid;
+  box-shadow: 2px 2px 2px 2px white;
 }
 .rule-header{
   padding: 10px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid white;
 }
 .rule-header .rule-title{
   font-size: 35px;
@@ -477,6 +492,9 @@ const closeRule = () => {
   font-weight: bold;
   
 }
+.close-rule{
+  color: white;
+}
 .rule-header .close-rule:hover{
   color: red;
 }
@@ -487,6 +505,10 @@ const closeRule = () => {
   padding-left: 6%;
 
 }
+.game-mix{
+  background-color: #0B5345;
+   
+}
 .gameplay{
   padding-left: 5%;
 }
@@ -494,18 +516,7 @@ const closeRule = () => {
   font-size: 20px; 
   margin-bottom: 2%;
 }
-.restartButton{
-  background-color: #2da042;
-  color: white;
-  border: white 5px solid;
-  border-radius: 20px;
-}
-.endGameBtn{
-  background-color: #b51010;
-  color: white;
-  border: white 5px solid;
-  border-radius: 20px;
-}
+
 .playbutton {
   width: 200px;
   height: 85px;
@@ -517,9 +528,10 @@ const closeRule = () => {
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .playbutton:hover{
-  background-color: #033326;
+ 
+  background-color: black;
   color: white;
-  border: #033326 5px solid;
+  border: white 5px solid;
 }
 .playbuttondiv {
   position: absolute;
@@ -562,10 +574,62 @@ const closeRule = () => {
 .field-name-text-text-input:hover{
   border-color: #69bdac;
 }
+.final-mix{
+  background-color:black;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 5px;
+  z-index: 10;
+  width: 500px;
+  height: 150px;
+  max-width: 90%;
+  color: white;
+  border: white 2px solid;
+  box-shadow: 5px 5px 10px 2px white;
+}
+.winnerGame{
+  font-size: 30px;
+  text-align: center;
+  color:white;
+  font-weight: bold;
+}
 .final-field-button{
   margin-top: 2%;
   display: flex;
-  justify-content: center;
+  justify-content:space-around;
+   
+}
+.restartButton{
+  width: 120px;
+  height: 55px;
+  font-weight: 700;
+  background-color: white;
+  color: #177428;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.restartButton:hover{
+  background-color: #0B5345;
+  color: white;
+  border: white 5px ;
+}
+.endGame{
+  width: 120px;
+  height: 55px;
+  font-weight: 700;
+  background-color: white;
+  color: black;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.endGame:hover{
+  background-color: red;
+  color: white;
+  border: white 5px ;
 }
 .ok-button-div {
   margin-top: 2rem;
@@ -594,6 +658,8 @@ const closeRule = () => {
   padding-top: 2%;
 }
 .card-card {
+  background-image:url('/images/bg-card-4.jpg') ;
+  background-size: cover;
   font-size: 50px;
   font-family: 'Gill Sans MT';
   text-align: center;
@@ -604,17 +670,44 @@ const closeRule = () => {
   background-color: white;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
+.card-card-bot{
+  background-image:url('/images/bg-card-4.jpg') ;
+  background-size: cover;
+  font-size: 50px;
+  font-family: 'Gill Sans MT';
+  text-align: center;
+  width: 115px;
+  height: 150px;
+  border: 2px solid ;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
 .card-card-div {
   display: flex;
   justify-content: space-evenly;
 
+}
+.card-card-text-bot {
+  margin-top: 45px;
+  color: black;
 }
 .card-card-text {
   margin-top: 55px;
   color: black;
 }
 .player-score {
-  font-size: 30px;
+  /* font-size: 15px; */
+  text-align: center;
+  position: relative;
+  width: 4.4rem;
+  height: 4.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 2em;
+  background: #eff0fc;
+  border-radius: 50%;
+  color: #0c2430;
 }
 .button-choose-player-div {
   display: flex;
