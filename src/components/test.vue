@@ -5,7 +5,6 @@ const HistoryButton = ref(false);
 const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
 //Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
-const cardCheat=[9,10,11,12];
 
 //function randomCard
 function randomCard(arr){
@@ -52,17 +51,6 @@ const sumOfbot=computed(()=>{
 
 //when start first time this web-page
 function Start(){ 
-  if(bot.name.toLocaleLowerCase()=="gao"){
-    firstofBot.value=randomCard(cardCheat)
-    cardOfbotCal.value.push(firstofBot.value)
-    card.value.splice(card.value.indexOf(firstofBot.value),1)
-    
-    secondofBot=21-firstofBot.value
-    cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-    cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-    card.value.splice(card.value.indexOf(secondofBot),1)
-  }
-  else{
 firstofBot.value = randomCard(card.value)//get first card of bot
 cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
@@ -70,7 +58,6 @@ secondofBot = randomCard(card.value)//get second card of bot
 cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
 cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
-  }
 
 //player seem bot
 firstofPlayer = randomCard(card.value)
