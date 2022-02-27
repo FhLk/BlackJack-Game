@@ -13,7 +13,7 @@ function randomCard(arr){
 
 //Oject of Player
 const player=reactive({name:'',score:0,round:[]})
-const bot=reactive({name:'',score:0,round:[]})
+const bot=reactive({name:'Bot',score:0,round:[]})
 
 //Card of Player
 const cardOfplayer=ref([])
@@ -301,15 +301,15 @@ const closeRule = () => {
           class="field-name-text-text-input"
         />
       </div>
-      <div class="field-name-text">
-        <!--<label class="field-name-text-text">Computer Name :</label>-->
+      <!-- <div class="field-name-text">
+        <label class="field-name-text-text">Computer Name :</label>
         <input
           type="text"
           placeholder="Computer Name...."
           v-model="bot.name"
           class="field-name-text-text-input"
         />
-      </div>
+      </div> -->
       <div class="ok-button-div">
         <button @click="play" class="ok-button" :disabled="CheckName(player.name,bot.name)">OK</button>
       </div>
@@ -334,11 +334,12 @@ const closeRule = () => {
       <div class="field-game" v-show="GameField">
         <p class="score-board">
           Score Board <br>
-          {{ player.name }} | {{ player.score }} : {{ bot.score }} | {{ bot.name }} <br>
+          <a style="color:#EDBB99 ;">{{ bot.name }}</a>  | {{ bot.score }} : {{ player.score }} | 
+         <a style="color: #AED6F1;">{{ player.name }}</a> <br>
           Round : {{round}}
         </p>
-        <p class="player-score">
-          {{ bot.name }} :
+        <p class="player-score-bot">
+          {{ bot.name }}  :<br>
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
@@ -359,8 +360,8 @@ const closeRule = () => {
             <span :style="sumOfbot < 18 ? '' : 'color : #b51010'"> STAY</span
             >
           </p>
-          <p :style="centerStyle" v-if="turn == 0">Turn Of {{ player.name }}</p>
-          <p :style="centerStyle" v-else-if="turn == 1">Turn Of {{bot.name}}</p>
+          <p :style="centerStyle" v-if="turn == 0">Turn Of <a style="color: #AED6F1;">{{ player.name }}</a></p>
+          <p :style="centerStyle" v-else-if="turn == 1">Turn Of <a style="color: #EDBB99;">{{bot.name}}</a></p>
           <div v-else>
             <p :style="centerStyle">----- Result -----</p>
             <div class="winnerRound" v-show="turn == 2">
@@ -386,7 +387,7 @@ const closeRule = () => {
             STAY
           </button>
         </div>
-        <p class="player-score">{{ player.name }} : {{ sumOfplayer }}</p>
+        <p class="player-score">{{ player.name }} :<br> {{ sumOfplayer }}</p>
         <div class="card-card-div">
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
@@ -394,7 +395,7 @@ const closeRule = () => {
         </div>
       </div>
       
-      <p class="history" v-show="player.round.length !=0" style="font-weight: 520;">History Round
+      <!-- <p class="history" v-show="player.round.length !=0" style="font-weight: 520;">History Round
   <ul>
     {{player.name}}
     <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
@@ -407,22 +408,43 @@ const closeRule = () => {
       <span v-else>Score +0</span>
     </li>
   </ul>
-</p>
+</p> -->
+</div>
+</div>
 
 <div class ="final-mix" v-show="GameField==false">
     <div class="final-field" v-show="GameField==false">
       <div class="winnerGame">
         THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
-      </div>
+      </div><br>
+       <p class="history-head">History Round</p>
+        <h2 class="history" v-show="player.round.length !=0" style="font-weight: 520;">
+       
+  
+  <ul >
+    {{player.name}}
+    <li v-for="(result,index) in player.round" :key="index">Round {{index+1}} : {{result}}
+      <span v-if="result=='Win'">Score : +1</span>
+      <span v-else>Score +0</span>
+    </li>
+    <br><br>
+    {{bot.name}}
+     <li v-for="(result,index) in bot.round" :key="index">Round {{index+1}} : {{result}}
+      <span v-if="result=='Win'">Score : +1</span>
+      <span v-else>Score +0</span>
+    </li>
+  </ul>
+</h2>
+
     <div class="final-field-button">
       <button class="restartButton" @click="restartGame">Play Agian</button>
       <button class="endGame" @click="endGame">End Game</button>
     </div>
-    </div>
-    </div>
+    
+    
   </div>
-  </div>
-
+  
+</div>
 </template>
 
 <style>
@@ -442,22 +464,30 @@ const closeRule = () => {
 }
 
 
-@keyframes body{
+/* @keyframes body{
   from {background-color: #0B5345;}
   to {background-color: black;}
-  /* to {background-color: #7DCEA0 ;} */
-}
+  /* to {background-color: #7DCEA0 ;} 
+} */
 .header{
   margin-bottom: 30px;
   font-size: 50px;
 }
 .history{
-  margin-top: 2%;
-  padding-left: 2%;
-  font-size: 25px;
-  background-color: #0B5345;
+  text-align: left;
+  font-size: 16px;
+  /* background-color: #0B5345; */
+    column-count: 2;
+  column-gap: 1.5rem;
+  -webkit-column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+  column-width: 200px;
+}
+.history-head{
+  text-align: center;
 }
 .rule{
+  border-style: dashed;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -468,8 +498,8 @@ const closeRule = () => {
   width: 650px;
   max-width: 80%;
   color: white;
-  border: white 2px solid;
-  box-shadow: 2px 2px 2px 2px white;
+  /* border: white 2px solid;
+  box-shadow: 2px 2px 2px 2px white; */
 }
 .rule-header{
   padding: 10px 15px;
@@ -583,7 +613,7 @@ const closeRule = () => {
   border-radius: 5px;
   z-index: 10;
   width: 500px;
-  height: 150px;
+  height: 350px;
   max-width: 90%;
   color: white;
   border: white 2px solid;
@@ -673,11 +703,11 @@ const closeRule = () => {
 .card-card-bot{
   background-image:url('/images/bg-card-4.jpg') ;
   background-size: cover;
-  font-size: 50px;
+  font-size: 40px;
   font-family: 'Gill Sans MT';
   text-align: center;
-  width: 115px;
-  height: 150px;
+  width: 100px;
+  height: 135px;
   border: 2px solid ;
   border-radius: 10px;
   background-color: white;
@@ -696,6 +726,19 @@ const closeRule = () => {
   margin-top: 55px;
   color: black;
 }
+.player-score-bot {
+  /* font-size: 15px; */
+  text-align: center;
+  position: relative;
+  width: 4.4rem;
+  height: 4.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 2em;
+  background:  black  ;
+  border-radius: 50%;
+  color: #EDBB99 ;
+}
 .player-score {
   /* font-size: 15px; */
   text-align: center;
@@ -705,9 +748,9 @@ const closeRule = () => {
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 2em;
-  background: #eff0fc;
+  background:  black  ;
   border-radius: 50%;
-  color: #0c2430;
+  color: #AED6F1;
 }
 .button-choose-player-div {
   display: flex;
