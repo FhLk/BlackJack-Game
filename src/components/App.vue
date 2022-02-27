@@ -439,18 +439,14 @@ const closeHistory = () => {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap');
-.body , .html {
-  position:fixed; 
+.body{ 
   background-color: #0B5345;
   color: white;
   font-family: 'Jost', sans-serif;
   background-size: cover;
   z-index: 2;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
+  padding-bottom:2rem;
+  height: 100%;
 }
 .winnerGame{
   font-size: 60px;
