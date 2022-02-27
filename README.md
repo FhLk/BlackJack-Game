@@ -40,15 +40,14 @@ npm run dev
      
      
 ## How to play :video_game:
-1.
-2.
-3.
+1.Players must add the values of the cards they get together to equal or close to 21 as much as possible.
+
+2.You can choose Draw to draw more cards or Stay to not draw cards.
+
+3.If any player is equal to or closest to 21 will be the winner.
+
+4.In the event that any side has a value greater than 21, the right to win immediately.
+
+5.But if both pair is greater than 21, it is considered a draw.
 
 
-## Vue 3 + Vite
-
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
