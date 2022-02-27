@@ -5,24 +5,18 @@ const HistoryButton = ref(false);
 const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
 //Original Card
 const card=ref([1,2,3,4,5,6,7,8,9,10,11,12]);
-const cardCheat=[9,10,11,12];
-
 //function randomCard
 function randomCard(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
-
 //Oject of Player
 const player=reactive({name:'',score:0,round:[]})
 const bot=reactive({name:'Computer',score:0,round:[]})
-
 //Card of Player
 const cardOfplayer=ref([])
-
 //Card of Bot 
 const cardOfbotShow=ref(['?']) //use for Show
 const cardOfbotCal=ref([]);// use for calculator
-
 //use with tag html for show
 const turn=ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
 const isChoose=ref(false);// when bot thinking of choose
@@ -30,39 +24,23 @@ const isBotStop=ref();// when bot choose 'Stop' = true
 const isPlayerStop=ref();// when player choose 'Stop' = true
 const GameField=ref(true)
 const isPlay=ref(0);//when Start this web
-
 let red=ref('');// ux of bot
-
 let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculator on html)
 let secondofBot;// second card of bot
 let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
 let round=ref(1)
-
 //Calculator card of player
 const sumOfplayer=computed(()=>{
   return cardOfplayer.value.reduce((p,c)=>{
     return p+c},0)
 });
-
 //Calculator card of bot
 const sumOfbot=computed(()=>{
   return cardOfbotCal.value.reduce((p,c)=>{return p+c},0)
 });
-
 //when start first time this web-page
 function Start(){ 
-  if(bot.name.toLocaleLowerCase()=="gao"){
-    firstofBot.value=randomCard(cardCheat)
-    cardOfbotCal.value.push(firstofBot.value)
-    card.value.splice(card.value.indexOf(firstofBot.value),1)
-    
-    secondofBot=21-firstofBot.value
-    cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-    cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-    card.value.splice(card.value.indexOf(secondofBot),1)
-  }
-  else{
 firstofBot.value = randomCard(card.value)//get first card of bot
 cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(firstofBot.value),1)// Remove card from original card
@@ -70,8 +48,6 @@ secondofBot = randomCard(card.value)//get second card of bot
 cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
 cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
 card.value.splice(card.value.indexOf(secondofBot),1)// Remove card from original card
-  }
-
 //player seem bot
 firstofPlayer = randomCard(card.value)
 card.value.splice(card.value.indexOf(firstofPlayer),1)
@@ -80,7 +56,6 @@ secondofPlayer = randomCard(card.value)
 cardOfplayer.value.push(secondofPlayer)
 card.value.splice(card.value.indexOf(secondofPlayer),1)
 }
-
 //Game play of player
 //when player clink Drawn
 const PlayerDrawn=()=>{
@@ -104,7 +79,6 @@ const PlayerStop =()=>{
     Bot();//bot turn 
   }
 }
-
 //Game play of Bot
 function Bot(){
   isChoose.value=true;//assigned 'isChoose' use for show tag html
@@ -118,23 +92,19 @@ function Bot(){
     isBotStop.value=true;//assigned 'isBotStop' use for process
   }
 }
-
 //if Bot choose Drawn
 function BotDrawn(){
   //tell to player that bot choose this 
   setTimeout(()=>{
     red.value='color:red'//change font-color to red
   },2000)
-
   //seem player clink drawn crad
   setTimeout(()=>{
     if(card.value.length!=0){
       let num=randomCard(card.value);
       cardOfbotShow.value.push(num)
-
       //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
       cardOfbotCal.value=[firstofBot.value,...cardOfbotShow.value.slice(1)];
-
       card.value.splice(card.value.indexOf(num),1)
       turn.value=0;
       isChoose.value=false;
@@ -142,30 +112,25 @@ function BotDrawn(){
     }
   },3000)
 }
-
 //if Bot choose Stop
 function BotStop(){
   //tell to player that bot choose this 
   setTimeout(()=>{
     red.value='color:red'
   },3000)
-
   //seem player click Stop
   setTimeout(()=>{
     red.value=''
     turn.value=0;
     isChoose.value=false;
-
     //if player click stop and bot choose stop
     if(isBotStop.value==isPlayerStop.value){
       turn.value=2;//change to turn of result
     }
   },6000)
 }
-
 //find the winner this round
 const winnerRound=ref('')
-
 //Get Sum of Bot and player to find winner this round 
 const winRound=(sumOfplayer,sumOfbot)=>{
   //check condition and assigned value to 'winnerRound'
@@ -173,7 +138,6 @@ const winRound=(sumOfplayer,sumOfbot)=>{
     winnerRound.value='Draw'
     return 'DRAW';
   }
-
   if(sumOfplayer>sumOfbot && sumOfplayer <= 21 ){
     winnerRound.value=player.name
     return `THE WINNER IN THIS ROUND IS ${player.name} !`;
@@ -182,7 +146,6 @@ const winRound=(sumOfplayer,sumOfbot)=>{
     winnerRound.value=bot.name
     return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
   }
-
   if(sumOfplayer<sumOfbot && sumOfbot <=21){
     winnerRound.value= bot.name
     return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
@@ -196,7 +159,6 @@ const winRound=(sumOfplayer,sumOfbot)=>{
     return'DRAW';
   }
 }
-
 //when click start new round
 const nextRound=()=>{
   round.value++
@@ -225,7 +187,6 @@ const nextRound=()=>{
   isPlayerStop.value=undefined
   Start() 
 }
-
 //use for show tag html 
 const play=()=>{
   isPlay.value++
@@ -233,13 +194,10 @@ const play=()=>{
     Start();// call function for start game
   }
 }
-
 //use to alert empty name
 const go = (playerName)=>{
   (playerName=='' ? alert("Please enter your name !") : play())
 }
-
-
 const winGame=(scoreplayer,scorebot)=>{
   if(scoreplayer == 2){
     GameField.value=false
@@ -250,7 +208,6 @@ const winGame=(scoreplayer,scorebot)=>{
     return bot.name
   }
 }
-
 const restartGame=()=>{
   card.value=[1,2,3,4,5,6,7,8,9,10,11,12];
   cardOfplayer.value=[]
@@ -284,6 +241,7 @@ const closeHistory = () => {
 
 <template>
   <div class="body" >
+    <div class="beforegame" v-show="isPlay !== 2">
     <div class="playbuttondiv">
       <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
       <button @click="play" v-show="isPlay == 0" class="playbutton">
@@ -307,7 +265,7 @@ const closeHistory = () => {
         <button @click="go(player.name)" class="ok-button" >GO</button>
       </div>
     </div>
-
+</div>
     <div class="gameplay" v-show="isPlay == 2">
       <div class="rule" v-if="RuleButton == true">
         <div class="rule-header">
@@ -326,6 +284,7 @@ const closeHistory = () => {
       </div>
      
       <div class="field-game" v-show="GameField">
+        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         <p class="score-board">
           Score Board <br>
          <a style="color: #EDE682;">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
@@ -362,9 +321,17 @@ const closeHistory = () => {
         </div> 
         <div class="button-choose-player-div">
           <button
-            v-show="turn == 0"
+            v-show="turn == 0 && sumOfplayer < 21"
             @click="PlayerDrawn"
             class="button-choose-player-left"
+          >
+            DRAW
+          </button>
+          <button
+            v-show="turn == 0 && sumOfplayer >= 21"
+            @click="PlayerDrawn"
+            class="button-choose-player-left-disable"
+            :disabled="sumOfplayer>=21"
           >
             DRAW
           </button>
@@ -381,9 +348,6 @@ const closeHistory = () => {
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
           </div>
-        </div>
-        <div style="">
-        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         </div>
         <div class="history" v-if="HistoryButton == true">
           <div class="history-header">
@@ -409,7 +373,9 @@ const closeHistory = () => {
         </div>
       </div>
     </div>
-    <div class="final-field" v-show="GameField==false">
+    <div class="beforegame" v-show="GameField==false">
+    <div class="final-field">
+      
     <p style="font-size: 50px; text-align: center; padding-top: 2%;">Result</p>
       <ul style="text-align: center;list-style-type: none; font-size: 25px;">
         {{player.name}}
@@ -433,23 +399,29 @@ const closeHistory = () => {
     </div>
       
   </div>   
+  </div>
    
 </template>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap');
-.body , .html {
-  position:fixed; 
+.body{
   background-color: #0B5345;
   color: white;
   font-family: 'Jost', sans-serif;
   background-size: cover;
   z-index: 2;
   position: absolute;
-  top: 0;
+  top: 20;
   left: 0;
   right: 0;
-  height: 100vh;
+  padding-bottom:3rem;
+}
+.beforegame{
+   background-color: #0B5345;
+  color: white;
+  font-family: 'Jost', sans-serif;
+  height:100vh;
 }
 .winnerGame{
   font-size: 60px;
@@ -473,6 +445,8 @@ const closeHistory = () => {
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
   display: block;
   margin: auto;
+  position: absolute;
+  transform: translate(1050%, 0);
 }
 .historyBtn:hover{
   background-color: #e76f1f;
@@ -740,6 +714,17 @@ const closeHistory = () => {
   background-color: #033326;
   border: #033326 5px solid;
   color: white;
+}
+.button-choose-player-left-disable{
+  width: 120px;
+  height: 55px; 
+  font-weight: 700;
+  font-size: 20px;
+  background-color: #74807d;
+  color: white;
+  border: #74807d 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .button-choose-player-right {
   margin-left: 100px;
