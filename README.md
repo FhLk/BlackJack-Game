@@ -1,9 +1,9 @@
 #Team Group
-1.63130500055 Tarathep Siripis
-2.63130500056 Thanyakorn Thalaengdi
-3.63130500060 Thiraphat Itamonchai
-4.63130500070 Natasia Yusuwapan
-5.63130500078 Paramat Pet-in
+1. 63130500055 Tarathep Siripis
+2. 63130500056 Thanyakorn Thalaengdi
+3. 63130500060 Thiraphat Itamonchai
+4. 63130500070 Natasia Yusuwapan
+5. 63130500078 Paramat Pet-in
 
 # BlackJack 	:spades::hearts::clubs::diamonds:
 **Created by  (ID:055,056,060,070,078)**
