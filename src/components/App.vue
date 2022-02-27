@@ -284,6 +284,7 @@ const closeHistory = () => {
 
 <template>
   <div class="body" >
+    <div class="beforeplaygame" v-if="isPlay !== 2">
     <div class="playbuttondiv">
       <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
       <button @click="play" v-show="isPlay == 0" class="playbutton">
@@ -307,7 +308,7 @@ const closeHistory = () => {
         <button @click="go(player.name)" class="ok-button" >GO</button>
       </div>
     </div>
-
+  </div>
     <div class="gameplay" v-show="isPlay == 2">
       <div class="rule" v-if="RuleButton == true">
         <div class="rule-header">
@@ -444,9 +445,19 @@ const closeHistory = () => {
   color: white;
   font-family: 'Jost', sans-serif;
   background-size: cover;
-  z-index: 2;
-  padding-bottom:2rem;
+  /* z-index: 2;
+  position: absolute;
+  top: 50;
+  left: 0;
+  right: 0; */
   height: 100%;
+  padding-bottom:2rem;
+}
+.beforeplaygame{
+    background-color: #0B5345;
+  color: white;
+  font-family: 'Jost', sans-serif;
+    height: 100vh;
 }
 .winnerGame{
   font-size: 60px;
