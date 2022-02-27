@@ -326,11 +326,13 @@ const closeHistory = () => {
       </div>
      
       <div class="field-game" v-show="GameField">
+      <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         <p class="score-board">
           Score Board <br>
          <a style="color: #EDE682;">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
          <a style="color: #EA99D5;">{{ bot.name }}</a> <br>
           Round : {{round}}
+          
         </p>
         <p class="player-score">
           <a style="color: #EA99D5;">{{ bot.name }}</a> :
@@ -383,7 +385,6 @@ const closeHistory = () => {
           </div>
         </div>
         <div style="">
-        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         </div>
         <div class="history" v-if="HistoryButton == true">
           <div class="history-header">
@@ -473,6 +474,8 @@ const closeHistory = () => {
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
   display: block;
   margin: auto;
+  position: absolute;
+  transform: translate(1350%, 0);
 }
 .historyBtn:hover{
   background-color: #e76f1f;
