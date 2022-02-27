@@ -409,6 +409,7 @@ const closeHistory = () => {
   top: 20;
   left: 0;
   right: 0;
+  padding-bottom:3rem;
 }
 .beforegame{
    background-color: #0B5345;
