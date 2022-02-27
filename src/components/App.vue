@@ -284,6 +284,7 @@ const closeHistory = () => {
       </div>
      
       <div class="field-game" v-show="GameField">
+        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         <p class="score-board">
           Score Board <br>
          <a style="color: #EDE682;">{{ player.name }}</a>  | {{ player.score }} : {{ bot.score }} | 
@@ -320,9 +321,17 @@ const closeHistory = () => {
         </div> 
         <div class="button-choose-player-div">
           <button
-            v-show="turn == 0"
+            v-show="turn == 0 && sumOfplayer < 21"
             @click="PlayerDrawn"
             class="button-choose-player-left"
+          >
+            DRAW
+          </button>
+          <button
+            v-show="turn == 0 && sumOfplayer >= 21"
+            @click="PlayerDrawn"
+            class="button-choose-player-left-disable"
+            :disabled="sumOfplayer>=21"
           >
             DRAW
           </button>
@@ -339,9 +348,6 @@ const closeHistory = () => {
           <div v-for="card in cardOfplayer" :key="card" class="card-card">
             <p class="card-card-text">{{ card }}</p>
           </div>
-        </div>
-        <div style="">
-        <button class="historyBtn" style="margin-top: 2%;" v-show="player.round.length !=0" @click="openHistory">History</button>
         </div>
         <div class="history" v-if="HistoryButton == true">
           <div class="history-header">
@@ -439,6 +445,8 @@ const closeHistory = () => {
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
   display: block;
   margin: auto;
+  position: absolute;
+  transform: translate(1050%, 0);
 }
 .historyBtn:hover{
   background-color: #e76f1f;
@@ -706,6 +714,17 @@ const closeHistory = () => {
   background-color: #033326;
   border: #033326 5px solid;
   color: white;
+}
+.button-choose-player-left-disable{
+  width: 120px;
+  height: 55px; 
+  font-weight: 700;
+  font-size: 20px;
+  background-color: #74807d;
+  color: white;
+  border: #74807d 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .button-choose-player-right {
   margin-left: 100px;
