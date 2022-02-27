@@ -35,6 +35,7 @@ let firstofBot=ref();// first card of bot (use 'ref()' because it to be calculat
 let secondofBot;// second card of bot
 let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
+let round=ref(1)
 
 //Calculator card of player
 const sumOfplayer=computed(()=>{
@@ -205,6 +206,7 @@ const winRound=(sumOfplayer,sumOfbot)=>{
 
 //when click start new round
 const nextRound=()=>{
+  round.value++
   //increase score from check condition by name 
   if(winnerRound.value==player.name){
     player.score++
@@ -263,6 +265,7 @@ const restartGame=()=>{
   bot.round=[]
   isBotStop.value=undefined
   isPlayerStop.value=undefined
+  round.value=1
   Start()
 }
 
@@ -288,10 +291,10 @@ const endGame=()=>{
         />
       </div>
       <div class="field-name-text">
-        <p class="field-name-text-text">Com Name:</p>
+        <p class="field-name-text-text">Bot Name:</p>
         <input
           type="text"
-          placeholder="Com Name...."
+          placeholder="Bot Name...."
           v-model="bot.name"
           class="field-name-text-text-input"
         />
@@ -304,8 +307,11 @@ const endGame=()=>{
     <div class="gameplay" v-show="isPlay == 2">
       <div class="field-game" v-show="GameField">
         <p class="score-board">
-          Score Board {{ player.name }} {{ player.score }}:{{ bot.score }}
-          {{ bot.name }}
+          Score Board 
+          <div>
+            {{ player.name }} | {{ player.score }}:{{ bot.score }} | {{ bot.name }}
+            </div>
+            <div>Round {{round}}</div>
         </p>
         <p class="player-score">
           {{ bot.name }}:
@@ -328,13 +334,13 @@ const endGame=()=>{
               >Stop</span
             >
           </p>
-          <p v-if="turn == 0">-----Turn Of Player-----</p>
-          <p v-else-if="turn == 1">-----Turn Of COM1-----</p>
+          <p v-if="turn == 0">-----Turn Of {{player.name}}-----</p>
+          <p v-else-if="turn == 1">-----Turn Of {{bot.name}}-----</p>
           <div v-else>
             <p>-----Result-----</p>
             <div class="winnerRound" v-show="turn == 2">
               THE WINNER THIS ROUND IS
-              {{ winRound(sumOfplayer, sumOfbot) }} score: +1
+              {{ winRound(sumOfplayer, sumOfbot) }}
             </div>
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
@@ -377,6 +383,11 @@ const endGame=()=>{
   </ul>
 </p>
 <div class="final-field" v-show="GameField==false">
+<p class="score-board">
+          <div>
+            {{ player.name }} | {{ player.score }} - {{ bot.score }} | {{ bot.name }}
+            </div>
+        </p>
 <div class="winnerGame">
   THE WINNER GAME IS {{winGame(player.score,bot.score)}} !!!!!!
 </div>
@@ -385,6 +396,7 @@ const endGame=()=>{
 </div>
     </div>
   </div>
+
 </template>
  
 <style>
