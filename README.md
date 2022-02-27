@@ -50,4 +50,6 @@ npm run dev
 
 5.But if both pair is greater than 21, it is considered a draw.
 
-
+## Reference
+เกมไพ่มรณะจ๊ะ - Resident Evil 7: DLC 21
+https://youtu.be/4-wLmsv23xs?t=99
