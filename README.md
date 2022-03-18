@@ -1,3 +1,10 @@
+# Team Group
+1. 63130500055 Tarathep Siripis
+2. 63130500056 Thanyakorn Thalaengdi
+3. 63130500060 Thiraphat Itamonchai
+4. 63130500070 Natasia Yusuwapan
+5. 63130500078 Paramat Pet-in
+
 # BlackJack 	:spades::hearts::clubs::diamonds:
 **Created by  (ID:055,056,060,070,078)**
 ## Introduction 	:rocket:
@@ -51,3 +58,6 @@ npm run dev
 5.But if both pair is greater than 21, it is considered a draw.
 
 
+## Reference
+เกมไพ่มรณะจ๊ะ - Resident Evil 7: DLC 21
+https://youtu.be/4-wLmsv23xs?t=99
