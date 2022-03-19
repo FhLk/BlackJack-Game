@@ -1,5 +1,8 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
+import ButtonPlay from './components/Front-Game/ButtonPlay.vue';
+import InputName from './components/Front-Game/InputName.vue';
+import RuleGame from './components/Game-Play/RuleGame.vue';
 const RuleButton = ref(true);
 const HistoryButton = ref(false);
 const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
@@ -9,6 +12,7 @@ const card = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 function randomCard(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+
 //Oject of Player
 const player = reactive({ name: '', score: 0, round: [] })
 const bot = reactive({ name: 'Computer', score: 0, round: [] })
@@ -243,52 +247,11 @@ const closeHistory = () => {
 <template>
   <div class="body">
     <div class="beforegame" v-show="isPlay !== 2">
-      <div class="playbuttondiv">
-        <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
-        <button @click="play" v-show="isPlay == 0" class="playbutton">Play</button>
-      </div>
-
-      <div class="field-name" v-show="isPlay == 1">
-        <div class="field-topic">
-          <h1>WELCOME TO BLACKJACK GAMES !</h1>
-        </div>
-        <div class="field-name-text">
-          <input
-            type="text"
-            placeholder="Enter Your Name..."
-            v-model="player.name"
-            class="field-name-text-text-input"
-          />
-        </div>
-        <div class="ok-button-div">
-          <button @click="go(player.name)" class="ok-button">GO</button>
-        </div>
-      </div>
+    <ButtonPlay :isPlay="isPlay" @play="play" v-show="isPlay===0"/>
+      <InputName :player="player" :isPlay="isPlay" @go="go" v-show="isPlay===1"/>
     </div>
     <div class="gameplay" v-show="isPlay == 2">
-      <div class="rule" v-if="RuleButton == true">
-        <div class="rule-header">
-          <div class="rule-title">BlackJack Rule</div>
-          <button class="close-rule" @click="closeRule">&times;</button>
-        </div>
-        <div class="rule-body">
-          <p
-            style="color: black;"
-          >- ผู้เล่นจะต้องนำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
-          <p style="color: black;">
-            - โดยจะสามารถเลือก
-            <a style="color: #11856d;">Draw</a> เพื่อจั่วการ์ดเพิ่ม หรือ
-            <a style="color: #b51010;">Stay</a> เพื่อไม่จั่วการ์ด
-          </p>
-          <p
-            style="color: black;"
-          >- หากผู้เล่นฝ่ายใดมีค่าเท่ากับหรือใกล้เคียง 21 มากที่สุด จะเป็นผู้ชนะ</p>
-          <p style="color: black;">- ในกรณีที่ฝ่ายใดมีค่ามากกว่า 21 จะหมดสิทธิ์ชนะในทันที</p>
-          <p style="color: black;">- แต่หากทั้งคู่มีค่ามากกว่า 21 จะถือว่าเสมอ</p>
-          <p style="color: black;">- ถ้า ชนะ จะได้ 1 คะแนน แต่ถ้า แพ้หรือเสมอ จะได้ 0 ใครได้ 2 คะแนนก่อนเป็นผู้ชนะ Game</p>
-        </div>
-      </div>
-
+    <RuleGame/>
       <div class="field-game" v-show="GameField">
         <button
           class="historyBtn"
@@ -607,7 +570,7 @@ const closeHistory = () => {
   color: white;
   border: #b51010 5px solid;
 }
-.playbutton {
+/* .playbutton {
   width: 200px;
   height: 85px;
   font-size: 30px;
@@ -621,15 +584,15 @@ const closeHistory = () => {
   background-color: #033326;
   color: white;
   border: #033326 5px solid;
-}
-.playbuttondiv {
+} */
+/* .playbuttondiv {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-}
-.field-name {
+} */
+/* .field-name {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -661,7 +624,7 @@ const closeHistory = () => {
 }
 .field-name-text-text-input:hover {
   border-color: #80e0cd;
-}
+} */
 .final-field {
   position: absolute;
   top: 50%;
