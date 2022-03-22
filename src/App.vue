@@ -2,9 +2,11 @@
 import { computed, reactive, ref } from 'vue';
 import ButtonPlay from './components/Front-Game/ButtonPlay.vue';
 import InputName from './components/Front-Game/InputName.vue';
-import RuleGame from './components/Game-Play/RuleGame.vue';
-const RuleButton = ref(true);
-const HistoryButton = ref(false);
+import RuleGame from './components/Field-Game/RuleGame.vue';
+import ButtonHistory from './components/Field-Game/ButtonHistory.vue';
+import Player from './components/Field-Game/Player.vue';
+import Com from './components/Field-Game/Com.vue';
+
 const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
 //Original Card
 const card = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
@@ -22,7 +24,6 @@ const cardOfplayer = ref([])
 const cardOfbotShow = ref(['?']) //use for Show
 const cardOfbotCal = ref([]);// use for calculator
 //use with tag html for show
-const turn = ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
 const isChoose = ref(false);// when bot thinking of choose
 const isBotStop = ref();// when bot choose 'Stop' = true
 const isPlayerStop = ref();// when player choose 'Stop' = true
@@ -34,12 +35,9 @@ let secondofBot;// second card of bot
 let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
 let round = ref(1)
+const turn =ref(0);
 //Calculator card of player
-const sumOfplayer = computed(() => {
-  return cardOfplayer.value.reduce((p, c) => {
-    return p + c
-  }, 0)
-});
+const sumOfplayer=ref();
 //Calculator card of bot
 const sumOfbot = computed(() => {
   return cardOfbotCal.value.reduce((p, c) => { return p + c }, 0)
@@ -63,7 +61,8 @@ function Start() {
 }
 //Game play of player
 //when player clink Drawn
-const PlayerDrawn = () => {
+const PlayerDrawn = (sum) => {
+  sumOfplayer.value=sum;
   if (card.value.length != 0) {// if orifinal card not empty
     isPlayerStop.value = false;// assigned 'isPlayerStop' use for any process
     let num = randomCard(card.value);//get card from random original card
@@ -74,7 +73,8 @@ const PlayerDrawn = () => {
   }
 }
 //when player clink Stop
-const PlayerStop = () => {
+const PlayerStop = (sum) => {
+  sumOfplayer.value=sum;
   isPlayerStop.value = true;// assigned 'isPlayerStop' use for any process
   turn.value = 1;//change turn to bot
   if (isPlayerStop.value == isBotStop.value) {//if player click stop and bot choose stop
@@ -233,32 +233,26 @@ const endGame = () => {
   alert('Thank You For Playing :)')
   location.reload();
 }
-const closeRule = () => {
-  RuleButton.value = false;
-}
-const openHistory = () => {
-  HistoryButton.value = true;
-}
-const closeHistory = () => {
-  HistoryButton.value = false;
-}
+
 </script>
 
 <template>
   <div class="body">
     <div class="beforegame" v-show="isPlay !== 2">
-    <ButtonPlay :isPlay="isPlay" @play="play" v-show="isPlay===0"/>
-      <InputName :player="player" :isPlay="isPlay" @go="go" v-show="isPlay===1"/>
+    <ButtonPlay 
+    :isPlay="isPlay" 
+    @play="play" v-show="isPlay===0"/>
+      <InputName 
+      :player="player" 
+      :isPlay="isPlay" 
+      @go="go" v-show="isPlay===1"/>
     </div>
     <div class="gameplay" v-show="isPlay == 2">
-    <RuleGame/>
+      <RuleGame/>
       <div class="field-game" v-show="GameField">
-        <button
-          class="historyBtn"
-          style="margin-top: 2%;"
-          v-show="player.round.length != 0"
-          @click="openHistory"
-        >History</button>
+        <ButtonHistory 
+        :player="player" 
+        :bot="bot"/>
         <p class="score-board">
           Score Board
           <br />
@@ -268,21 +262,10 @@ const closeHistory = () => {
           <br />
           Round : {{ round }}
         </p>
-        <p class="player-score">
-          <a style="color: #EA99D5;">{{ bot.name }}</a>
-          :
-          {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
-        </p>
-        <div v-if="turn == 2" class="card-card-div">
-          <div v-for="card in cardOfbotCal" :key="card" class="card-card">
-            <p class="card-card-text">{{ card }}</p>
-          </div>
-        </div>
-        <div v-else class="card-card-div">
-          <div v-for="card in cardOfbotShow" :key="card" class="card-card">
-            <p class="card-card-text">{{ card }}</p>
-          </div>
-        </div>
+        <Com :cardOfbot=
+        "{Show:cardOfbotShow,
+        Cal:cardOfbotCal,
+        FirstCard:firstofBot}" :bot="bot" :turn="turn"/>
         <div class="center">
           <p v-show="isChoose" class="text-choose">
             <span :style="sumOfbot < 18 ? red : ''">DRAW</span> :
@@ -304,56 +287,12 @@ const closeHistory = () => {
             <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
           </div>
         </div>
-        <div class="button-choose-player-div">
-          <button
-            v-show="turn == 0 && sumOfplayer < 21"
-            @click="PlayerDrawn"
-            class="button-choose-player-left"
-          >DRAW</button>
-          <button
-            v-show="turn == 0 && sumOfplayer >= 21"
-            @click="PlayerDrawn"
-            class="button-choose-player-left-disable"
-            :disabled="sumOfplayer >= 21"
-          >DRAW</button>
-          <button v-show="turn == 0" @click="PlayerStop" class="button-choose-player-right">STAY</button>
-        </div>
-        <p class="player-score">
-          <a style="color: #EDE682;">{{ player.name }}</a>
-          : {{ sumOfplayer }}
-        </p>
-        <div class="card-card-div">
-          <div v-for="card in cardOfplayer" :key="card" class="card-card">
-            <p class="card-card-text">{{ card }}</p>
-          </div>
-        </div>
-        <div class="history" v-if="HistoryButton == true">
-          <div class="history-header">
-            <div class="history-title">History</div>
-            <button class="close-history" @click="closeHistory">&times;</button>
-          </div>
-          <div class="history-body">
-            <ul>
-              <a style="color: #008E89;">{{ player.name }}</a>
-              <li v-for="(result, index) in player.round" :key="index">
-                Round {{ index + 1 }} : {{ result }}
-                <span v-if="result == 'Win'">
-                  <a style="color: red;">+1</a>
-                </span>
-                <span v-else>+0</span>
-              </li>
-              <br />
-              <a style="color: #008E89;">{{ bot.name }}</a>
-              <li v-for="(result, index) in bot.round" :key="index">
-                Round {{ index + 1 }} : {{ result }}
-                <span v-if="result == 'Win'">
-                  <a style="color: red;">+1</a>
-                </span>
-                <span v-else>+0</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <Player 
+        :player="player" 
+        :cardOfplayer="cardOfplayer" 
+        :turn="turn"
+        @drawn="PlayerDrawn" 
+        @stay="PlayerStop" />
       </div>
     </div>
     <div class="beforegame" v-show="GameField == false">
@@ -384,17 +323,9 @@ const closeHistory = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap");
-@media only screen and (max-width: 1600px) {
-  body {
-    padding-bottom: 5rem;
-  }
-  .historyBtn{
-    transform: translate(1050%, 0);
-  }
-  
-}
+
 .body {
   background-color: #0b5345;
   color: white;
@@ -421,121 +352,9 @@ const closeHistory = () => {
   padding-top: 3%;
   padding-bottom: 3%;
 }
-.header {
-  margin-bottom: 30px;
-  font-size: 50px;
-}
-.historyBtn {
-  width: 120px;
-  height: 55px;
-  font-weight: 700;
-  background-color: white;
-  color: #e76f1f;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-  display: block;
-  margin: auto;
-  position: absolute;
-  transform: translate(1300%, 0);
-}
-.historyBtn:hover {
-  background-color: #e76f1f;
-  color: white;
-  border: #e76f1f 5px solid;
-}
-.history {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 10px;
-  z-index: 10;
-  background-color: white;
-  width: 650px;
-  max-width: 80%;
-  color: black;
-  border: black 2px solid;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.history-header {
-  padding: 10px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid black;
-}
-.history-header .history-title {
-  font-size: 35px;
-  font-weight: bold;
-  padding-left: 1%;
-}
-.history-header .close-history {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  background: none;
-  font-size: 35px;
-  font-weight: bold;
-}
-.history-header .close-history:hover {
-  color: red;
-}
-.history-body {
-  padding: 10px 15px;
-  font-size: 20px;
-  font-weight: bold;
-}
-.rule {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 10px;
-  z-index: 10;
-  background-color: white;
-  width: 800px;
-  max-width: 80%;
-  color: black;
-  border: black 2px solid;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.rule-header {
-  padding: 10px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid black;
-}
-.rule-header .rule-title {
-  font-size: 35px;
-  font-weight: bold;
-  padding-left: 1%;
-}
-.rule-header .close-rule {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  background: none;
-  font-size: 35px;
-  font-weight: bold;
-}
-.rule-header .close-rule:hover {
-  color: red;
-}
-.rule-body {
-  padding: 10px 15px;
-  font-size: 20px;
-  font-weight: bold;
-  padding-left: 6%;
-}
+
 .gameplay {
   padding-left: 5%;
-}
-.winnerRound {
-  font-size: 20px;
-  padding-bottom: 1%;
-  padding-top: 1%;
 }
 .restartButton {
   width: 120px;
@@ -570,61 +389,6 @@ const closeHistory = () => {
   color: white;
   border: #b51010 5px solid;
 }
-/* .playbutton {
-  width: 200px;
-  height: 85px;
-  font-size: 30px;
-  background-color: white;
-  color: #11856d;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.playbutton:hover {
-  background-color: #033326;
-  color: white;
-  border: #033326 5px solid;
-} */
-/* .playbuttondiv {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-} */
-/* .field-name {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-::placeholder {
-  color: rgba(54, 54, 54, 0.815);
-  padding: 10px;
-}
-.field-name-text {
-  border-radius: 100px;
-  margin-top: 3rem;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-}
-.field-name-text-text {
-  margin-top: 1rem;
-  margin-right: 20px;
-}
-.field-name-text-text-input {
-  margin-left: 11px;
-  width: 85%;
-  border: solid #11856d;
-  border-radius: 5px;
-  height: 65px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.field-name-text-text-input:hover {
-  border-color: #80e0cd;
-} */
 .final-field {
   position: absolute;
   top: 50%;
@@ -637,107 +401,16 @@ const closeHistory = () => {
   display: flex;
   justify-content: center;
 }
-.ok-button-div {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-}
-.ok-button {
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 20px;
-  width: 100px;
-  height: 50px;
-  background-color: white;
-  color: #11856d;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.ok-button:hover {
-  background-color: #033326;
-  color: white;
-  border: #033326 5px solid;
-}
+
 .score-board {
   font-size: 26px;
   text-align: center;
-}
-.card-card {
-  font-size: 50px;
-  font-family: "Gill Sans MT";
-  text-align: center;
-  width: 150px;
-  height: 200px;
-  border: 2px solid;
-  border-radius: 10px;
-  background-image: url(../assets/bg-card.jpg);
-  background-size: cover;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.card-card-div {
-  display: flex;
-  justify-content: space-evenly;
-}
-.card-card-text {
-  margin-top: 55px;
-  color: black;
-}
-.player-score {
-  font-size: 30px;
-}
-.button-choose-player-div {
-  display: flex;
-  justify-content: center;
-}
-.button-choose-player-left {
-  width: 120px;
-  height: 55px;
-  font-weight: 700;
-  font-size: 20px;
-  background-color: white;
-  color: #11856d;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.button-choose-player-left:hover {
-  background-color: #033326;
-  border: #033326 5px solid;
-  color: white;
-}
-.button-choose-player-left-disable {
-  width: 120px;
-  height: 55px;
-  font-weight: 700;
-  font-size: 20px;
-  background-color: #74807d;
-  color: white;
-  border: #74807d 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.button-choose-player-right {
-  margin-left: 100px;
-  width: 120px;
-  height: 55px;
-  font-weight: 700;
-  font-size: 20px;
-  background-color: white;
-  color: #b51010;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.button-choose-player-right:hover {
-  background-color: #b51010;
-  border: #b51010 5px solid;
-  color: white;
 }
 .center {
   text-align: center;
   padding-top: 20px;
 }
+
 .text-choose {
   font-size: 30px;
 }
@@ -756,5 +429,10 @@ const closeHistory = () => {
   background-color: white;
   color: #4446c2;
   border: white 5px solid;
+}
+.winnerRound {
+  font-size: 20px;
+  padding-bottom: 1%;
+  padding-top: 1%;
 }
 </style>

@@ -67,5 +67,27 @@ const props=defineProps({
 .field-name-text-text-input:hover {
   border-color: #80e0cd;
 }
+.ok-button-div {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.ok-button {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 20px;
+  width: 100px;
+  height: 50px;
+  background-color: white;
+  color: #11856d;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
+.ok-button:hover {
+  background-color: #033326;
+  color: white;
+  border: #033326 5px solid;
+}
 
 </style>

@@ -41,5 +41,8 @@ const props=defineProps({
   transform: translate(-50%, -50%);
   text-align: center;
 }
-
+.header {
+  margin-bottom: 30px;
+  font-size: 50px;
+}
 </style>
