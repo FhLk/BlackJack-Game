@@ -6,6 +6,9 @@ import RuleGame from './components/Field-Game/RuleGame.vue';
 import ButtonHistory from './components/Field-Game/ButtonHistory.vue';
 import Player from './components/Field-Game/Player.vue';
 import Com from './components/Field-Game/Com.vue';
+import ButtonNextRound from './components/Field-Game/ButtonNextRound.vue';
+import ShowResult from './components/Final-Field/ShowResult.vue';
+import ButtunFinalField from './components/Final-Field/Buttun-Final-Field.vue';
 
 const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
 //Original Card
@@ -36,13 +39,13 @@ let firstofPlayer;//first card of player
 let secondofPlayer;//second card of player 
 let round = ref(1)
 const turn =ref(0);
-//Calculator card of player
+
 const sumOfplayer=ref();
-//Calculator card of bot
+
 const sumOfbot = computed(() => {
   return cardOfbotCal.value.reduce((p, c) => { return p + c }, 0)
 });
-//when start first time this web-page
+
 function Start() {
   firstofBot.value = randomCard(card.value)//get first card of bot
   cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
@@ -134,55 +137,9 @@ function BotStop() {
     }
   }, 6000)
 }
-//find the winner this round
-const winnerRound = ref('')
-//Get Sum of Bot and player to find winner this round 
-const winRound = (sumOfplayer, sumOfbot) => {
-  //check condition and assigned value to 'winnerRound'
-  if (sumOfplayer > 21 && sumOfbot > 21) {
-    winnerRound.value = 'Draw'
-    return 'DRAW';
-  }
-  if (sumOfplayer > sumOfbot && sumOfplayer <= 21) {
-    winnerRound.value = player.name
-    return `THE WINNER IN THIS ROUND IS ${player.name} !`;
-  }
-  else if (sumOfplayer > sumOfbot && sumOfplayer > 21) {
-    winnerRound.value = bot.name
-    return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
-  }
-  if (sumOfplayer < sumOfbot && sumOfbot <= 21) {
-    winnerRound.value = bot.name
-    return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
-  }
-  else if (sumOfplayer < sumOfbot && sumOfbot > 21) {
-    winnerRound.value = player.name
-    return `THE WINNER IN THIS ROUND IS ${player.name} !`;
-  }
-  else {
-    winnerRound.value = 'Draw'
-    return 'DRAW';
-  }
-}
 //when click start new round
 const nextRound = () => {
   round.value++
-  //increase score from check condition by name 
-  if (winnerRound.value == player.name) {
-    player.score++
-    player.round.push("Win")
-    bot.round.push("Lose")
-  }
-  else if (winnerRound.value == bot.name) {
-    bot.score++
-    player.round.push("Lose")
-    bot.round.push("Win")
-  }
-  else {
-    player.round.push("Draw")
-    bot.round.push("Draw")
-  }
-  //reset value and restart round
   card.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   cardOfplayer.value = []
   cardOfbotShow.value = ['?']
@@ -213,25 +170,21 @@ const winGame = (scoreplayer, scorebot) => {
     return bot.name
   }
 }
-const restartGame = () => {
-  card.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  cardOfplayer.value = []
-  cardOfbotShow.value = ['?']
-  cardOfbotCal.value = []
-  turn.value = 0
-  GameField.value = true
-  player.score = 0
-  player.round = []
-  bot.score = 0
-  bot.round = []
-  isBotStop.value = undefined
-  isPlayerStop.value = undefined
-  round.value = 1
+const restartGame = (defaultValue) => {
+  card.value = defaultValue.card;
+  cardOfplayer.value = defaultValue.cardOfplayer;
+  cardOfbotShow.value = defaultValue.cardOfbotShow;
+  cardOfbotCal.value = defaultValue.cardOfbotCal
+  turn.value = defaultValue.turn
+  GameField.value = defaultValue.GameField
+  player.score = defaultValue.playerscore
+  player.round = defaultValue.playerround
+  bot.score = defaultValue.botscore
+  bot.round = defaultValue.botround
+  isBotStop.value = defaultValue.isBotStop
+  isPlayerStop.value = defaultValue.isPlayerStop
+  round.value = defaultValue.round
   Start()
-}
-const endGame = () => {
-  alert('Thank You For Playing :)')
-  location.reload();
 }
 
 </script>
@@ -280,11 +233,11 @@ const endGame = () => {
             <a style="color: #EA99D5;">{{ bot.name }}</a>
           </p>
           <div v-else>
-            <div class="winnerRound" v-show="turn == 2">
-              {{ winRound(sumOfplayer, sumOfbot) }}
-              <br />
-            </div>
-            <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
+            <ButtonNextRound :sum="{player:sumOfplayer,bot:sumOfbot}"
+            :player="player" 
+            :bot="bot" 
+            :turn="turn"
+            @nextround="nextRound"/>
           </div>
         </div>
         <Player 
@@ -297,27 +250,9 @@ const endGame = () => {
     </div>
     <div class="beforegame" v-show="GameField == false">
       <div class="final-field">
-        <p style="font-size: 50px; text-align: center; padding-top: 2%;">Result</p>
-        <ul style="text-align: center;list-style-type: none; font-size: 25px;">
-          {{ player.name }}
-          <li v-for="(result, index) in player.round" :key="index">
-            Round {{ index + 1 }} : {{ result }}
-            <span v-if="result == 'Win'">+1</span>
-            <span v-else>+0</span>
-          </li>
-          <br />
-          {{ bot.name }}
-          <li v-for="(result, index) in bot.round" :key="index">
-            Round {{ index + 1 }} : {{ result }}
-            <span v-if="result == 'Win'">+1</span>
-            <span v-else>+0</span>
-          </li>
-        </ul>
+        <ShowResult :player="player" :bot="bot"/>
         <div class="winnerGame">THE WINNER IS {{ winGame(player.score, bot.score) }} !!!!!!</div>
-        <div class="final-field-button">
-          <button class="restartButton" @click="restartGame">Play Agian</button>
-          <button class="endGame" @click="endGame">End Game</button>
-        </div>
+        <ButtunFinalField @restartgame="restartGame"/>
       </div>
     </div>
   </div>
@@ -356,50 +291,12 @@ const endGame = () => {
 .gameplay {
   padding-left: 5%;
 }
-.restartButton {
-  width: 120px;
-  height: 55px;
-  font-size: 20px;
-  font-weight: 700;
-  background-color: white;
-  color: #11856d;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.restartButton:hover {
-  background-color: #033326;
-  color: white;
-  border: #033326 5px solid;
-}
-.endGame {
-  width: 120px;
-  height: 55px;
-  font-size: 20px;
-  font-weight: 700;
-  margin-left: 100px;
-  background-color: white;
-  color: #b51010;
-  border: white 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-}
-.endGame:hover {
-  background-color: #b51010;
-  color: white;
-  border: #b51010 5px solid;
-}
 .final-field {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-}
-.final-field-button {
-  margin-top: 2%;
-  display: flex;
-  justify-content: center;
 }
 
 .score-board {
@@ -413,26 +310,5 @@ const endGame = () => {
 
 .text-choose {
   font-size: 30px;
-}
-.button-next {
-  width: 120px;
-  height: 60px;
-  font-weight: 700;
-  background-color: #4446c2;
-  color: white;
-  border: #4446c2 5px solid;
-  border-radius: 5px;
-  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
-  margin-top: 5px;
-}
-.button-next:hover {
-  background-color: white;
-  color: #4446c2;
-  border: white 5px solid;
-}
-.winnerRound {
-  font-size: 20px;
-  padding-bottom: 1%;
-  padding-top: 1%;
 }
 </style>
