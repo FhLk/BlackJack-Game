@@ -399,7 +399,7 @@ const endGame=()=>{
 
 </template>
  
-<style>
+<style scoped>
 .body {
   height: 100vh;
 }

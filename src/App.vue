@@ -261,6 +261,8 @@ const restartGame = (defaultValue) => {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap");
 
+
+
 .body {
   background-color: #0b5345;
   color: white;

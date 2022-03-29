@@ -9,15 +9,17 @@ const props=defineProps({
 </script>
  
 <template>
-
+<div>
 <div class="playbuttondiv">
     <h1 class="header" v-show="isPlay === 0">BlackJack Game</h1>
     <button @click="$emit('play')" class="playbutton">Play</button>
+</div>
 </div>
 
 </template>
  
 <style scoped>
+
 
 .playbutton {
   width: 200px;

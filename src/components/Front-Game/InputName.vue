@@ -52,10 +52,6 @@ const props=defineProps({
   justify-content: center;
   align-content: center;
 }
-.field-name-text-text {
-  margin-top: 1rem;
-  margin-right: 20px;
-}
 .field-name-text-text-input {
   margin-left: 11px;
   width: 85%;
