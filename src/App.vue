@@ -209,9 +209,9 @@ const restartGame = (defaultValue) => {
         <p class="score-board">
           Score Board
           <br />
-          <a style="color: #EDE682;">{{ player.name }}</a>
+          <a style="color: #EDE682;">{{ player.name.charAt(0) }}</a>
           | {{ player.score }} : {{ bot.score }} |
-          <a style="color: #EA99D5;">{{ bot.name }}</a>
+          <a style="color: #EA99D5;">{{bot.name.charAt(0)}}</a>
           <br />
           Round : {{ round }}
         </p>
@@ -226,11 +226,11 @@ const restartGame = (defaultValue) => {
           </p>
           <p :style="centerStyle" v-if="turn == 0">
             Turn Of
-            <a style="color: #EDE682;">{{ player.name }}</a>
+            <a style="color: #EDE682;">{{ player.name }} ($500)</a>
           </p>
           <p :style="centerStyle" v-else-if="turn == 1">
             Turn Of
-            <a style="color: #EA99D5;">{{ bot.name }}</a>
+            <a style="color: #EA99D5;">{{ bot.name }} ($600)</a>
           </p>
           <div v-else>
             <ButtonNextRound :sum="{player:sumOfplayer,bot:sumOfbot}"
