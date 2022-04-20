@@ -170,4 +170,12 @@ const sumOfplayer = computed(() => {
   background-size: cover;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
+.card-card-div {
+  display: flex;
+  justify-content: space-evenly;
+}
+.card-card-text {
+  margin-top: 55px;
+  color: black;
+}
 </style>
