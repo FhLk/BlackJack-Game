@@ -477,6 +477,7 @@ const closeHistory = () => {
                 </span>
                 <span v-else>+0</span>
               </li>
+              <br v-if="player.round.length === 0"/>
               -----------------------
               <br />
               <a style="color: #002bff">{{ bot.name }}</a>
@@ -497,7 +498,7 @@ const closeHistory = () => {
         <p style="font-size: 50px; text-align: center; padding-top: 2%">
           Result
         </p>
-        <ul style="text-align: center; list-style-type: none; font-size: 25px">
+        <ul style="text-align: center; list-style-type: none; font-size: 25px;margin: 0;padding: 0;">
           {{
             player.name
           }}
@@ -679,7 +680,6 @@ p {
   z-index: 10;
   background-color: white;
   width: 800px;
-  /* max-width: 80%; */
   color: black;
   border: black 2px solid;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
@@ -812,14 +812,21 @@ p {
   border-color: #80e0cd;
 }
 .final-field {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  text-align: center;
+  border-radius: 10px;
+  z-index: 10;
+  background-color: white;
+  width: 800px;
+  color: black;
+  border: black 2px solid;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .final-field-button {
   margin-top: 2%;
+  margin-bottom: 2%;
   display: flex;
   justify-content: center;
 }
