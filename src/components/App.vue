@@ -197,7 +197,7 @@ const play = () => {
 }
 //use to alert empty name
 const go = (playerName,botName) => {
-  (playerName === '' || botName === '' ? alert("Please enter your/maid name !") : play())
+  (playerName === '' || botName === '' ? alert("Please enter your/bot name !") : play())
 }
 const winGame = (scoreplayer, scorebot) => {
   if (scoreplayer == 2) {
@@ -244,7 +244,7 @@ const closeHistory = () => {
   <div class="body">
     <div class="beforegame" v-show="isPlay !== 2">
       <div class="playbuttondiv">
-        <h1 class="header" v-show="isPlay == 0">Maid BlackJack Game</h1>
+        <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
         <button @click="play" v-show="isPlay == 0" class="playbutton">Play</button>
       </div>
 
@@ -261,7 +261,7 @@ const closeHistory = () => {
           />
           <input
             type="text"
-            placeholder="Enter Maid Name..."
+            placeholder="Enter Bot Name..."
             v-model="bot.name"
             class="field-name-text-text-input"
           />
