@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from 'vue';
 const RuleButton = ref(true);
 const HistoryButton = ref(false);
-const centerStyle = "font-size: 25px; margin-top: 2%; font-weight: 600"
+const centerStyle = "font-size: 25px; margin-top:2%; font-weight: 600"
 //Original Card
 const card = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 //function randomCard
@@ -11,7 +11,7 @@ function randomCard(arr) {
 }
 //Oject of Player
 const player = reactive({ name: '', score: 0, round: [] })
-const bot = reactive({ name: 'Computer', score: 0, round: [] })
+const bot = reactive({ name: '', score: 0, round: [] })
 //Card of Player
 const cardOfplayer = ref([])
 //Card of Bot 
@@ -196,8 +196,8 @@ const play = () => {
   }
 }
 //use to alert empty name
-const go = (playerName) => {
-  (playerName == '' ? alert("Please enter your name !") : play())
+const go = (playerName,botName) => {
+  (playerName === '' || botName === '' ? alert("Please enter your/maid name !") : play())
 }
 const winGame = (scoreplayer, scorebot) => {
   if (scoreplayer == 2) {
@@ -244,13 +244,13 @@ const closeHistory = () => {
   <div class="body">
     <div class="beforegame" v-show="isPlay !== 2">
       <div class="playbuttondiv">
-        <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
+        <h1 class="header" v-show="isPlay == 0">Maid BlackJack Game</h1>
         <button @click="play" v-show="isPlay == 0" class="playbutton">Play</button>
       </div>
 
       <div class="field-name" v-show="isPlay == 1">
         <div class="field-topic">
-          <h1>WELCOME TO BLACKJACK GAMES !</h1>
+          <h1>WELCOME TO GAME !</h1>
         </div>
         <div class="field-name-text">
           <input
@@ -259,9 +259,15 @@ const closeHistory = () => {
             v-model="player.name"
             class="field-name-text-text-input"
           />
+          <input
+            type="text"
+            placeholder="Enter Maid Name..."
+            v-model="bot.name"
+            class="field-name-text-text-input"
+          />
         </div>
         <div class="ok-button-div">
-          <button @click="go(player.name)" class="ok-button">GO</button>
+          <button @click="go(player.name,bot.name)" class="ok-button">GO</button>
         </div>
       </div>
     </div>
@@ -296,15 +302,21 @@ const closeHistory = () => {
           v-show="player.round.length != 0"
           @click="openHistory"
         >History</button>
-        <p class="score-board">
+        <div class="score-board">
           Score Board
-          <br />
-          <a style="color: #EDE682;">{{ player.name }}</a>
-          | {{ player.score }} : {{ bot.score }} |
-          <a style="color: #EA99D5;">{{ bot.name }}</a>
-          <br />
+          <div style="display: flex; justify-content: space-around;">
+          <div style="width: 50%; text-align: end; color: #EDE682;">
+            {{ player.name }}  
+          </div>
+          <div style="width: 50%;">
+            | {{ player.score }} : {{ bot.score }} |
+          </div>
+          <div style="width: 50%; text-align: start; color: #EA99D5;">
+            {{ bot.name }}
+          </div>
+        </div>
           Round : {{ round }}
-        </p>
+        </div>
         <p class="player-score">
           <a style="color: #EA99D5;">{{ bot.name }}</a>
           :
@@ -421,28 +433,32 @@ const closeHistory = () => {
   </div>
 </template>
 
-<style>
+<style scoped>  
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap");
-@media only screen and (max-width: 1600px) {
-  body {
-    padding-bottom: 5rem;
+
+@media(max-width: 1400px){
+  .card-card-div{
+    height: 180px;
+    /* transform: scale(.8); */
   }
-  .historyBtn{
-    transform: translate(1050%, 0);
+
+  .score-board{
+    height: 70px;
   }
-  
+}
+p{
+  margin-bottom: 0;
 }
 .body {
+  height: 100%;
   background-color: #0b5345;
   color: white;
   font-family: "Jost", sans-serif;
   background-size: cover;
   z-index: 2;
   position: absolute;
-  top: 20;
   left: 0;
   right: 0;
-  padding-bottom: 11.75rem;
 }
 .beforegame {
   background-color: #0b5345;
@@ -452,7 +468,7 @@ const closeHistory = () => {
   padding-bottom: 11.75rem;
 }
 .winnerGame {
-  font-size: 60px;
+  font-size: 50px;
   font-weight: 700;
   text-align: center;
   padding-top: 3%;
@@ -474,7 +490,7 @@ const closeHistory = () => {
   display: block;
   margin: auto;
   position: absolute;
-  transform: translate(1300%, 0);
+  right: 5%;
 }
 .historyBtn:hover {
   background-color: #e76f1f;
@@ -568,6 +584,8 @@ const closeHistory = () => {
 }
 .gameplay {
   padding-left: 5%;
+  padding-right: 5%;
+
 }
 .winnerRound {
   font-size: 20px;
@@ -575,7 +593,7 @@ const closeHistory = () => {
   padding-top: 1%;
 }
 .restartButton {
-  width: 120px;
+  width: 125px;
   height: 55px;
   font-size: 20px;
   font-weight: 700;
@@ -591,7 +609,7 @@ const closeHistory = () => {
   border: #033326 5px solid;
 }
 .endGame {
-  width: 120px;
+  width: 125px;
   height: 55px;
   font-size: 20px;
   font-weight: 700;
@@ -711,6 +729,7 @@ const closeHistory = () => {
   background-image: url(../assets/bg-card.jpg);
   background-size: cover;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+  /* transform: scale(.8); */
 }
 .card-card-div {
   display: flex;
