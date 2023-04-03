@@ -726,7 +726,7 @@ p{
   height: 200px;
   border: 2px solid;
   border-radius: 10px;
-  background-image: url(../assets/bg-card.jpg);
+  background-image: url(./assets/bg-card.jpg);
   background-size: cover;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
