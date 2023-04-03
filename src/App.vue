@@ -1,8 +1,8 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
-const RuleButton = ref(true);
+import { computed, reactive, ref } from "vue";
+const RuleButton = ref(false);
 const HistoryButton = ref(false);
-const centerStyle = "font-size: 25px; margin-top:2%; font-weight: 600"
+const centerStyle = "font-size: 25px; margin-top:2%; font-weight: 600";
 //Original Card
 const card = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 //function randomCard
@@ -10,234 +10,239 @@ function randomCard(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 //Oject of Player
-const player = reactive({ name: '', score: 0, round: [] })
-const bot = reactive({ name: '', score: 0, round: [] })
+const player = reactive({ name: "", score: 0, round: [] });
+const bot = reactive({ name: "", score: 0, round: [] });
 //Card of Player
-const cardOfplayer = ref([])
-//Card of Bot 
-const cardOfbotShow = ref(['?']) //use for Show
-const cardOfbotCal = ref([]);// use for calculator
+const cardOfplayer = ref([]);
+//Card of Bot
+const cardOfbotShow = ref(["?"]); //use for Show
+const cardOfbotCal = ref([]); // use for calculator
 //use with tag html for show
 const turn = ref(0); // use for change turn between player and bot (turn of player is 0, turn of bot is 1)
-const isChoose = ref(false);// when bot thinking of choose
-const isBotStop = ref();// when bot choose 'Stop' = true
-const isPlayerStop = ref();// when player choose 'Stop' = true
-const GameField = ref(true)
-const isPlay = ref(0);//when Start this web
-let red = ref('');// ux of bot
-let firstofBot = ref();// first card of bot (use 'ref()' because it to be calculator on html)
-let secondofBot;// second card of bot
-let firstofPlayer;//first card of player
-let secondofPlayer;//second card of player 
-let round = ref(1)
+const isChoose = ref(false); // when bot thinking of choose
+const isBotStop = ref(); // when bot choose 'Stop' = true
+const isPlayerStop = ref(); // when player choose 'Stop' = true
+const GameField = ref(true);
+const isPlay = ref(0); //when Start this web
+let red = ref(""); // ux of bot
+let firstofBot = ref(); // first card of bot (use 'ref()' because it to be calculator on html)
+let secondofBot; // second card of bot
+let firstofPlayer; //first card of player
+let secondofPlayer; //second card of player
+let round = ref(1);
 //Calculator card of player
 const sumOfplayer = computed(() => {
   return cardOfplayer.value.reduce((p, c) => {
-    return p + c
-  }, 0)
+    return p + c;
+  }, 0);
 });
 //Calculator card of bot
 const sumOfbot = computed(() => {
-  return cardOfbotCal.value.reduce((p, c) => { return p + c }, 0)
+  return cardOfbotCal.value.reduce((p, c) => {
+    return p + c;
+  }, 0);
 });
 //when start first time this web-page
 function Start() {
-  firstofBot.value = randomCard(card.value)//get first card of bot
-  cardOfbotCal.value.push(firstofBot.value)//add card to card of bot use for calculator
-  card.value.splice(card.value.indexOf(firstofBot.value), 1)// Remove card from original card
-  secondofBot = randomCard(card.value)//get second card of bot
-  cardOfbotCal.value.push(secondofBot);//add card to card of bot use for show 
-  cardOfbotShow.value.push(secondofBot);//add card to card of bot use for calculator
-  card.value.splice(card.value.indexOf(secondofBot), 1)// Remove card from original card
+  firstofBot.value = randomCard(card.value); //get first card of bot
+  cardOfbotCal.value.push(firstofBot.value); //add card to card of bot use for calculator
+  card.value.splice(card.value.indexOf(firstofBot.value), 1); // Remove card from original card
+  secondofBot = randomCard(card.value); //get second card of bot
+  cardOfbotCal.value.push(secondofBot); //add card to card of bot use for show
+  cardOfbotShow.value.push(secondofBot); //add card to card of bot use for calculator
+  card.value.splice(card.value.indexOf(secondofBot), 1); // Remove card from original card
   //player seem bot
-  firstofPlayer = randomCard(card.value)
-  card.value.splice(card.value.indexOf(firstofPlayer), 1)
-  cardOfplayer.value.push(firstofPlayer)
-  secondofPlayer = randomCard(card.value)
-  cardOfplayer.value.push(secondofPlayer)
-  card.value.splice(card.value.indexOf(secondofPlayer), 1)
+  firstofPlayer = randomCard(card.value);
+  card.value.splice(card.value.indexOf(firstofPlayer), 1);
+  cardOfplayer.value.push(firstofPlayer);
+  secondofPlayer = randomCard(card.value);
+  cardOfplayer.value.push(secondofPlayer);
+  card.value.splice(card.value.indexOf(secondofPlayer), 1);
 }
 //Game play of player
 //when player clink Drawn
 const PlayerDrawn = () => {
-  if (card.value.length != 0) {// if orifinal card not empty
-    isPlayerStop.value = false;// assigned 'isPlayerStop' use for any process
-    let num = randomCard(card.value);//get card from random original card
-    cardOfplayer.value.push(num)//add card to card of player
-    card.value.splice(card.value.indexOf(num), 1)// Remove card from original card
-    turn.value = 1;//change turn to bot
-    Bot();//bot turn
+  if (card.value.length != 0) {
+    // if orifinal card not empty
+    isPlayerStop.value = false; // assigned 'isPlayerStop' use for any process
+    let num = randomCard(card.value); //get card from random original card
+    cardOfplayer.value.push(num); //add card to card of player
+    card.value.splice(card.value.indexOf(num), 1); // Remove card from original card
+    turn.value = 1; //change turn to bot
+    Bot(); //bot turn
   }
-}
+};
 //when player clink Stop
 const PlayerStop = () => {
-  isPlayerStop.value = true;// assigned 'isPlayerStop' use for any process
-  turn.value = 1;//change turn to bot
-  if (isPlayerStop.value == isBotStop.value) {//if player click stop and bot choose stop
-    turn.value = 2//change to turn of result
+  isPlayerStop.value = true; // assigned 'isPlayerStop' use for any process
+  turn.value = 1; //change turn to bot
+  if (isPlayerStop.value == isBotStop.value) {
+    //if player click stop and bot choose stop
+    turn.value = 2; //change to turn of result
+  } else {
+    Bot(); //bot turn
   }
-  else {
-    Bot();//bot turn 
-  }
-}
+};
 //Game play of Bot
 function Bot() {
-  isChoose.value = true;//assigned 'isChoose' use for show tag html
+  isChoose.value = true; //assigned 'isChoose' use for show tag html
   //Check condition
-  if (sumOfbot.value < 18) {// if Calculator card of bot less than 18
-    BotDrawn();//Bot Choose Drawn
-    isBotStop.value = false//assigned 'isBotStop' use for process
-  }
-  else {//if more than 18
-    BotStop();//Bot choose Stop
-    isBotStop.value = true;//assigned 'isBotStop' use for process
+  if (sumOfbot.value < 18) {
+    // if Calculator card of bot less than 18
+    BotDrawn(); //Bot Choose Drawn
+    isBotStop.value = false; //assigned 'isBotStop' use for process
+  } else {
+    //if more than 18
+    BotStop(); //Bot choose Stop
+    isBotStop.value = true; //assigned 'isBotStop' use for process
   }
 }
 //if Bot choose Drawn
 function BotDrawn() {
-  //tell to player that bot choose this 
+  //tell to player that bot choose this
   setTimeout(() => {
-    red.value = 'color:red'//change font-color to red
-  }, 2000)
+    red.value = "color:red"; //change font-color to red
+  }, 2000);
   //seem player clink drawn crad
   setTimeout(() => {
     if (card.value.length != 0) {
       let num = randomCard(card.value);
-      cardOfbotShow.value.push(num)
+      cardOfbotShow.value.push(num);
       //make card of bot use for calculator = card of bot use for show, trim index 0 of card of bot use for show
       cardOfbotCal.value = [firstofBot.value, ...cardOfbotShow.value.slice(1)];
-      card.value.splice(card.value.indexOf(num), 1)
+      card.value.splice(card.value.indexOf(num), 1);
       turn.value = 0;
       isChoose.value = false;
-      red.value = ''
+      red.value = "";
     }
-  }, 3000)
+  }, 3000);
 }
 //if Bot choose Stop
 function BotStop() {
-  //tell to player that bot choose this 
+  //tell to player that bot choose this
   setTimeout(() => {
-    red.value = 'color:red'
-  }, 3000)
+    red.value = "color:red";
+  }, 3000);
   //seem player click Stop
   setTimeout(() => {
-    red.value = ''
+    red.value = "";
     turn.value = 0;
     isChoose.value = false;
     //if player click stop and bot choose stop
     if (isBotStop.value == isPlayerStop.value) {
-      turn.value = 2;//change to turn of result
+      turn.value = 2; //change to turn of result
     }
-  }, 6000)
+  }, 6000);
 }
 //find the winner this round
-const winnerRound = ref('')
-//Get Sum of Bot and player to find winner this round 
+const winnerRound = ref("");
+//Get Sum of Bot and player to find winner this round
 const winRound = (sumOfplayer, sumOfbot) => {
   //check condition and assigned value to 'winnerRound'
   if (sumOfplayer > 21 && sumOfbot > 21) {
-    winnerRound.value = 'Draw'
-    return 'DRAW';
+    winnerRound.value = "Draw";
+    return "!!! DRAW !!!";
   }
   if (sumOfplayer > sumOfbot && sumOfplayer <= 21) {
-    winnerRound.value = player.name
+    winnerRound.value = player.name;
     return `THE WINNER IN THIS ROUND IS ${player.name} !`;
-  }
-  else if (sumOfplayer > sumOfbot && sumOfplayer > 21) {
-    winnerRound.value = bot.name
+  } else if (sumOfplayer > sumOfbot && sumOfplayer > 21) {
+    winnerRound.value = bot.name;
     return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
   }
   if (sumOfplayer < sumOfbot && sumOfbot <= 21) {
-    winnerRound.value = bot.name
+    winnerRound.value = bot.name;
     return `THE WINNER IN THIS ROUND IS ${bot.name} !`;
-  }
-  else if (sumOfplayer < sumOfbot && sumOfbot > 21) {
-    winnerRound.value = player.name
+  } else if (sumOfplayer < sumOfbot && sumOfbot > 21) {
+    winnerRound.value = player.name;
     return `THE WINNER IN THIS ROUND IS ${player.name} !`;
+  } else {
+    winnerRound.value = "Draw";
+    return "!!! DRAW !!!";
   }
-  else {
-    winnerRound.value = 'Draw'
-    return 'DRAW';
-  }
-}
+};
 //when click start new round
 const nextRound = () => {
-  round.value++
-  //increase score from check condition by name 
+  round.value++;
+  //increase score from check condition by name
   if (winnerRound.value == player.name) {
-    player.score++
-    player.round.push("Win")
-    bot.round.push("Lose")
-  }
-  else if (winnerRound.value == bot.name) {
-    bot.score++
-    player.round.push("Lose")
-    bot.round.push("Win")
-  }
-  else {
-    player.round.push("Draw")
-    bot.round.push("Draw")
+    player.score++;
+    player.round.push("Win");
+    bot.round.push("Lose");
+  } else if (winnerRound.value == bot.name) {
+    bot.score++;
+    player.round.push("Lose");
+    bot.round.push("Win");
+  } else {
+    player.round.push("Draw");
+    bot.round.push("Draw");
   }
   //reset value and restart round
   card.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  cardOfplayer.value = []
-  cardOfbotShow.value = ['?']
-  cardOfbotCal.value = []
-  turn.value = 0
-  isBotStop.value = undefined
-  isPlayerStop.value = undefined
-  Start()
-}
-//use for show tag html 
+  cardOfplayer.value = [];
+  cardOfbotShow.value = ["?"];
+  cardOfbotCal.value = [];
+  turn.value = 0;
+  isBotStop.value = undefined;
+  isPlayerStop.value = undefined;
+  Start();
+};
+//use for show tag html
 const play = () => {
-  isPlay.value++
+  isPlay.value++;
   if (isPlay.value == 2) {
-    Start();// call function for start game
+    Start(); // call function for start game
   }
-}
+};
 //use to alert empty name
-const go = (playerName,botName) => {
-  (playerName === '' || botName === '' ? alert("Please enter your/bot name !") : play())
-}
+const go = (playerName, botName) => {
+  playerName === "" || botName === ""
+    ? alert("Please enter your/bot name !")
+    : play();
+};
 const winGame = (scoreplayer, scorebot) => {
   if (scoreplayer == 2) {
-    GameField.value = false
-    return player.name
+    GameField.value = false;
+    return player.name;
+  } else if (scorebot == 2) {
+    GameField.value = false;
+    return bot.name;
   }
-  else if (scorebot == 2) {
-    GameField.value = false
-    return bot.name
-  }
-}
+};
 const restartGame = () => {
   card.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  cardOfplayer.value = []
-  cardOfbotShow.value = ['?']
-  cardOfbotCal.value = []
-  turn.value = 0
-  GameField.value = true
-  player.score = 0
-  player.round = []
-  bot.score = 0
-  bot.round = []
-  isBotStop.value = undefined
-  isPlayerStop.value = undefined
-  round.value = 1
-  Start()
-}
+  cardOfplayer.value = [];
+  cardOfbotShow.value = ["?"];
+  cardOfbotCal.value = [];
+  turn.value = 0;
+  GameField.value = true;
+  player.score = 0;
+  player.round = [];
+  bot.score = 0;
+  bot.round = [];
+  isBotStop.value = undefined;
+  isPlayerStop.value = undefined;
+  round.value = 1;
+  Start();
+};
 const endGame = () => {
-  alert('Thank You For Playing :)')
+  alert("Thank You For Playing :)");
   location.reload();
-}
+};
 const closeRule = () => {
   RuleButton.value = false;
-}
+};
+
+const openRule = () => {
+  RuleButton.value = true;
+};
+
 const openHistory = () => {
   HistoryButton.value = true;
-}
+};
 const closeHistory = () => {
   HistoryButton.value = false;
-}
+};
 </script>
 
 <template>
@@ -245,9 +250,57 @@ const closeHistory = () => {
     <div class="beforegame" v-show="isPlay !== 2">
       <div class="playbuttondiv">
         <h1 class="header" v-show="isPlay == 0">BlackJack Game</h1>
-        <button @click="play" v-show="isPlay == 0" class="playbutton">Play</button>
+        <button @click="play" v-show="isPlay == 0" class="playbutton" style="margin-right: 10px;">
+          Play
+        </button>
+        <button @click="openRule" v-show="isPlay == 0" class="playbutton" style="margin-left: 10px;">
+          How To Play
+        </button>
       </div>
-
+      <div class="rule-beforgame" v-if="RuleButton == true">
+          <div class="rule-header">
+            <div class="rule-title">BlackJack Rule</div>
+            <button class="close-rule" @click="closeRule">&times;</button>
+          </div>
+          <div class="rule-body">
+            <p style="color: black">
+              - ผู้เล่นจะต้องนำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง
+              <a style="color: #ff0000">21</a>
+              มากที่สุด
+            </p>
+            <p style="color: black">
+              - การ์ดที่ใช้เล่นเป็นมาจาก<a style="color: #ff0000"
+                >สำรับเดียวกัน</a
+              >จะมี<a style="color: #ff0000">ทั้งหมด 12 ใบเท่านั้น</a>
+              มีตั้งแต่เลข 1 - 12
+            </p>
+            <p style="color: black">
+              - โดยจะสามารถเลือก
+              <a style="color: #11856d">Draw</a> เพื่อจั่วการ์ดเพิ่ม หรือ
+              <a style="color: #b51010">Stay</a> เพื่อไม่จั่วการ์ด
+            </p>
+            <p style="color: black">
+              - เกมจะยุติลงเมื่อทั้งสองฝ่ายเลือก
+              <a style="color: #b51010">Stay</a> หรือไม่จั่วการ์ดทั้งคู่
+            </p>
+            <p style="color: black">
+              - หากผู้เล่นฝ่ายใดมีค่าเท่ากับหรือใกล้เคียง
+              <a style="color: #ff0000">21</a> มากที่สุด จะเป็นผู้ชนะ
+            </p>
+            <p style="color: black">
+              - ในกรณีที่ฝ่ายใดมีค่ามากกว่า
+              <a style="color: #ff0000">21</a> จะหมดสิทธิ์ชนะในทันที
+            </p>
+            <p style="color: black">
+              - แต่หากทั้งคู่มีค่ามากกว่า
+              <a style="color: #ff0000">21</a> จะถือว่าเสมอ
+            </p>
+            <p style="color: black">
+              - ถ้า ชนะ จะได้ 1 คะแนน แต่ถ้า แพ้หรือเสมอ จะได้ 0 ใครได้ 2
+              คะแนนก่อนเป็นผู้ชนะ Game
+            </p>
+          </div>
+        </div>
       <div class="field-name" v-show="isPlay == 1">
         <div class="field-topic">
           <h1>WELCOME TO GAME !</h1>
@@ -267,7 +320,9 @@ const closeHistory = () => {
           />
         </div>
         <div class="ok-button-div">
-          <button @click="go(player.name,bot.name)" class="ok-button">GO</button>
+          <button @click="go(player.name, bot.name)" class="ok-button">
+            GO
+          </button>
         </div>
       </div>
     </div>
@@ -278,48 +333,67 @@ const closeHistory = () => {
           <button class="close-rule" @click="closeRule">&times;</button>
         </div>
         <div class="rule-body">
-          <p
-            style="color: black;"
-          >- ผู้เล่นจะต้องนำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง 21 มากที่สุด</p>
-          <p style="color: black;">
-            - โดยจะสามารถเลือก
-            <a style="color: #11856d;">Draw</a> เพื่อจั่วการ์ดเพิ่ม หรือ
-            <a style="color: #b51010;">Stay</a> เพื่อไม่จั่วการ์ด
+          <p style="color: black">
+            - ผู้เล่นจะต้องนำค่าของการ์ดที่ได้มาบวกกันให้เท่ากับหรือใกล้เคียง
+            <a style="color: #ff0000">21</a>
+            มากที่สุด
           </p>
-          <p
-            style="color: black;"
-          >- หากผู้เล่นฝ่ายใดมีค่าเท่ากับหรือใกล้เคียง 21 มากที่สุด จะเป็นผู้ชนะ</p>
-          <p style="color: black;">- ในกรณีที่ฝ่ายใดมีค่ามากกว่า 21 จะหมดสิทธิ์ชนะในทันที</p>
-          <p style="color: black;">- แต่หากทั้งคู่มีค่ามากกว่า 21 จะถือว่าเสมอ</p>
-          <p style="color: black;">- ถ้า ชนะ จะได้ 1 คะแนน แต่ถ้า แพ้หรือเสมอ จะได้ 0 ใครได้ 2 คะแนนก่อนเป็นผู้ชนะ Game</p>
+          <p style="color: black">
+            - การ์ดที่ใช้เล่นเป็นมาจาก<a style="color: #ff0000">สำรับเดียวกัน</a
+            >จะมี<a style="color: #ff0000">ทั้งหมด 12 ใบเท่านั้น</a>
+            มีตั้งแต่เลข 1 - 12
+          </p>
+          <p style="color: black">
+            - โดยจะสามารถเลือก
+            <a style="color: #11856d">Draw</a> เพื่อจั่วการ์ดเพิ่ม หรือ
+            <a style="color: #b51010">Stay</a> เพื่อไม่จั่วการ์ด
+          </p>
+          <p style="color: black">
+            - เกมจะยุติลงเมื่อทั้งสองฝ่ายเลือก
+            <a style="color: #b51010">Stay</a> หรือไม่จั่วการ์ดทั้งคู่
+          </p>
+          <p style="color: black">
+            - หากผู้เล่นฝ่ายใดมีค่าเท่ากับหรือใกล้เคียง
+            <a style="color: #ff0000">21</a> มากที่สุด จะเป็นผู้ชนะ
+          </p>
+          <p style="color: black">
+            - ในกรณีที่ฝ่ายใดมีค่ามากกว่า
+            <a style="color: #ff0000">21</a> จะหมดสิทธิ์ชนะในทันที
+          </p>
+          <p style="color: black">
+            - แต่หากทั้งคู่มีค่ามากกว่า
+            <a style="color: #ff0000">21</a> จะถือว่าเสมอ
+          </p>
+          <p style="color: black">
+            - ถ้า ชนะ จะได้ 1 คะแนน แต่ถ้า แพ้หรือเสมอ จะได้ 0 ใครได้ 2
+            คะแนนก่อนเป็นผู้ชนะ Game
+          </p>
         </div>
       </div>
-
       <div class="field-game" v-show="GameField">
-        <button
-          class="historyBtn"
-          style="margin-top: 2%;"
-          v-show="player.round.length != 0"
-          @click="openHistory"
-        >History</button>
+        <button class="historyBtn" style="margin-top: 2%" @click="openHistory">
+          History
+        </button>
+        <button class="htpBtn" style="margin-top: 2%" @click="openRule">
+          How To Play
+        </button>
         <div class="score-board">
           Score Board
-          <div style="display: flex; justify-content: space-around;">
-          <div style="width: 50%; text-align: end; color: #EDE682;">
-            {{ player.name }}  
+          <div style="display: flex; justify-content: space-around">
+            <div style="width: 50%; text-align: end; color: #002bff">
+              {{ player.name }}
+            </div>
+            <div style="width: 50%">
+              | {{ player.score }} : {{ bot.score }} |
+            </div>
+            <div style="width: 50%; text-align: start; color: #ff0000">
+              {{ bot.name }}
+            </div>
           </div>
-          <div style="width: 50%;">
-            | {{ player.score }} : {{ bot.score }} |
-          </div>
-          <div style="width: 50%; text-align: start; color: #EA99D5;">
-            {{ bot.name }}
-          </div>
-        </div>
           Round : {{ round }}
         </div>
         <p class="player-score">
-          <a style="color: #EA99D5;">{{ bot.name }}</a>
-          :
+          <a style="color: #ff0000">{{ bot.name }}</a> :
           {{ turn == 2 ? sumOfbot : sumOfbot - firstofBot }}
         </p>
         <div v-if="turn == 2" class="card-card-div">
@@ -332,43 +406,55 @@ const closeHistory = () => {
             <p class="card-card-text">{{ card }}</p>
           </div>
         </div>
-        <div class="center">
-          <p v-show="isChoose" class="text-choose">
-            <span :style="sumOfbot < 18 ? red : ''">DRAW</span> :
-            <span :style="sumOfbot < 18 ? '' : red">STAY</span>
-          </p>
-          <p :style="centerStyle" v-if="turn == 0">
-            Turn Of
-            <a style="color: #EDE682;">{{ player.name }}</a>
-          </p>
-          <p :style="centerStyle" v-else-if="turn == 1">
-            Turn Of
-            <a style="color: #EA99D5;">{{ bot.name }}</a>
-          </p>
-          <div v-else>
-            <div class="winnerRound" v-show="turn == 2">
-              {{ winRound(sumOfplayer, sumOfbot) }}
-              <br />
-            </div>
-            <button @click="nextRound" v-show="turn == 2" class="button-next">Next Round</button>
-          </div>
-        </div>
         <div class="button-choose-player-div">
           <button
             v-show="turn == 0 && sumOfplayer < 21"
             @click="PlayerDrawn"
             class="button-choose-player-left"
-          >DRAW</button>
+          >
+            DRAW
+          </button>
           <button
             v-show="turn == 0 && sumOfplayer >= 21"
             @click="PlayerDrawn"
             class="button-choose-player-left-disable"
             :disabled="sumOfplayer >= 21"
-          >DRAW</button>
-          <button v-show="turn == 0" @click="PlayerStop" class="button-choose-player-right">STAY</button>
+          >
+            DRAW
+          </button>
+          <div class="center">
+            <p v-show="isChoose" class="text-choose">
+              <span :style="sumOfbot < 18 ? red : ''">DRAW</span> :
+              <span :style="sumOfbot < 18 ? '' : red">STAY</span>
+            </p>
+            <p :style="centerStyle" v-if="turn == 0">
+              Turn Of
+              <a style="color: #002bff">{{ player.name }}</a>
+            </p>
+            <p :style="centerStyle" v-else-if="turn == 1">
+              Turn Of
+              <a style="color: #ff0000">{{ bot.name }}</a>
+            </p>
+            <div v-else>
+              <div class="winnerRound" v-show="turn == 2">
+                {{ winRound(sumOfplayer, sumOfbot) }}
+                <br />
+              </div>
+              <button @click="nextRound" v-show="turn == 2" class="button-next">
+                Next Round
+              </button>
+            </div>
+          </div>
+          <button
+            v-show="turn == 0"
+            @click="PlayerStop"
+            class="button-choose-player-right"
+          >
+            STAY
+          </button>
         </div>
         <p class="player-score">
-          <a style="color: #EDE682;">{{ player.name }}</a>
+          <a style="color: #002bff">{{ player.name }}</a>
           : {{ sumOfplayer }}
         </p>
         <div class="card-card-div">
@@ -383,20 +469,21 @@ const closeHistory = () => {
           </div>
           <div class="history-body">
             <ul>
-              <a style="color: #008E89;">{{ player.name }}</a>
+              <a style="color: #ff0000">{{ player.name }}</a>
               <li v-for="(result, index) in player.round" :key="index">
                 Round {{ index + 1 }} : {{ result }}
                 <span v-if="result == 'Win'">
-                  <a style="color: red;">+1</a>
+                  <a style="color: red">+1</a>
                 </span>
                 <span v-else>+0</span>
               </li>
+              -----------------------
               <br />
-              <a style="color: #008E89;">{{ bot.name }}</a>
+              <a style="color: #002bff">{{ bot.name }}</a>
               <li v-for="(result, index) in bot.round" :key="index">
                 Round {{ index + 1 }} : {{ result }}
                 <span v-if="result == 'Win'">
-                  <a style="color: red;">+1</a>
+                  <a style="color: red">+1</a>
                 </span>
                 <span v-else>+0</span>
               </li>
@@ -407,23 +494,31 @@ const closeHistory = () => {
     </div>
     <div class="beforegame" v-show="GameField == false">
       <div class="final-field">
-        <p style="font-size: 50px; text-align: center; padding-top: 2%;">Result</p>
-        <ul style="text-align: center;list-style-type: none; font-size: 25px;">
-          {{ player.name }}
+        <p style="font-size: 50px; text-align: center; padding-top: 2%">
+          Result
+        </p>
+        <ul style="text-align: center; list-style-type: none; font-size: 25px">
+          {{
+            player.name
+          }}
           <li v-for="(result, index) in player.round" :key="index">
             Round {{ index + 1 }} : {{ result }}
             <span v-if="result == 'Win'">+1</span>
             <span v-else>+0</span>
           </li>
           <br />
-          {{ bot.name }}
+          {{
+            bot.name
+          }}
           <li v-for="(result, index) in bot.round" :key="index">
             Round {{ index + 1 }} : {{ result }}
             <span v-if="result == 'Win'">+1</span>
             <span v-else>+0</span>
           </li>
         </ul>
-        <div class="winnerGame">THE WINNER IS {{ winGame(player.score, bot.score) }} !!!!!!</div>
+        <div class="winnerGame">
+          THE WINNER IS {{ winGame(player.score, bot.score) }} !!!!!!
+        </div>
         <div class="final-field-button">
           <button class="restartButton" @click="restartGame">Play Agian</button>
           <button class="endGame" @click="endGame">End Game</button>
@@ -433,25 +528,25 @@ const closeHistory = () => {
   </div>
 </template>
 
-<style scoped>  
+<style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap");
 
-@media(max-width: 1400px){
-  .card-card-div{
+@media (max-width: 1400px) {
+  .card-card-div {
     height: 180px;
     /* transform: scale(.8); */
   }
 
-  .score-board{
+  .score-board {
     height: 70px;
   }
 }
-p{
+p {
   margin-bottom: 0;
 }
 .body {
   height: 100%;
-  background-color: #0b5345;
+  background: linear-gradient(to bottom right, #ffccff 0%, #ff99ff 100%);
   color: white;
   font-family: "Jost", sans-serif;
   background-size: cover;
@@ -461,10 +556,10 @@ p{
   right: 0;
 }
 .beforegame {
-  background-color: #0b5345;
+  background: linear-gradient(to bottom right, #ffccff 0%, #ff99ff 100%);
   color: white;
   font-family: "Jost", sans-serif;
-  height: 81.30vh;
+  height: 81.3vh;
   padding-bottom: 11.75rem;
 }
 .winnerGame {
@@ -511,6 +606,28 @@ p{
   border: black 2px solid;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
+
+.htpBtn {
+  width: 120px;
+  height: 55px;
+  font-weight: 700;
+  background-color: white;
+  color: #e76f1f;
+  border: white 5px solid;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+  display: block;
+  margin: auto;
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+}
+
+.htpBtn:hover {
+  background-color: #e76f1f;
+  color: white;
+  border: #e76f1f 5px solid;
+}
 .history-header {
   padding: 10px 15px;
   display: flex;
@@ -553,6 +670,20 @@ p{
   border: black 2px solid;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
+.rule-beforgame {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  z-index: 10;
+  background-color: white;
+  width: 800px;
+  /* max-width: 80%; */
+  color: black;
+  border: black 2px solid;
+  box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
+}
 .rule-header {
   padding: 10px 15px;
   display: flex;
@@ -585,7 +716,6 @@ p{
 .gameplay {
   padding-left: 5%;
   padding-right: 5%;
-
 }
 .winnerRound {
   font-size: 20px;
@@ -630,7 +760,8 @@ p{
   height: 85px;
   font-size: 30px;
   background-color: white;
-  color: #11856d;
+  /* color: linear-gradient(to bottom right, #ffccff 0%, #ff99ff 100%); */
+  color: #ff99ff;
   border: white 5px solid;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
@@ -672,7 +803,7 @@ p{
 .field-name-text-text-input {
   margin-left: 11px;
   width: 85%;
-  border: solid #11856d;
+  border: solid #ff43ff;
   border-radius: 5px;
   height: 65px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
@@ -704,7 +835,7 @@ p{
   width: 100px;
   height: 50px;
   background-color: white;
-  color: #11856d;
+  color: #ff99ff;
   border: white 5px solid;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
@@ -743,7 +874,9 @@ p{
 }
 .button-choose-player-div {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 .button-choose-player-left {
   width: 120px;
@@ -773,7 +906,6 @@ p{
   box-shadow: 5px 5px 10px 2px rgba(36, 36, 36, 0.507);
 }
 .button-choose-player-right {
-  margin-left: 100px;
   width: 120px;
   height: 55px;
   font-weight: 700;
